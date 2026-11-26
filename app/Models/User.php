@@ -51,6 +51,28 @@ class User extends Authenticatable
         ];
     }
 
+    public function isAdmin(): bool
+    {
+        return $this->role === UserRole::ADMIN;
+    }
+
+    public function isSupervisor(): bool
+    {
+        return $this->role === UserRole::SUPERVISOR;
+    }
+
+    /**
+     * Admin aktif mengakses semua departemen; supervisor aktif hanya departemennya.
+     */
+    public function canAccessDepartment(int $departmentId): bool
+    {
+        if (! $this->is_active) {
+            return false;
+        }
+
+        return $this->isAdmin() || $this->department_id === $departmentId;
+    }
+
     /**
      * @return BelongsTo<Department, $this>
      */
