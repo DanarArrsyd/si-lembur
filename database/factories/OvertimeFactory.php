@@ -27,7 +27,7 @@ class OvertimeFactory extends Factory
             'number' => 'LBR-20261109-'.fake()->unique()->numerify('####'),
             'employee_id' => Employee::factory(),
             // Snapshot departemen karyawan, kecuali diisi eksplisit (mis. ->for($department)).
-            'department_id' => fn (array $attributes) => Employee::query()->findOrFail($attributes['employee_id'])->department_id,
+            'department_id' => fn (array $attributes) => Employee::query()->whereKey($attributes['employee_id'])->value('department_id'),
             'overtime_date' => '2026-11-09',
             'start_at' => '2026-11-09 17:00:00',
             'end_at' => '2026-11-09 20:00:00',
