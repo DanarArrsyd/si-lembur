@@ -16,13 +16,13 @@ Fase N — selesai
 ---
 
 ## Fase 1 — Fondasi
-- [ ] Laravel + starter kit React (Inertia, TS), registrasi dimatikan
-- [ ] Tailwind + `tokens.css` dari `DESIGN.md`, font Plus Jakarta Sans & JetBrains Mono
-- [ ] Enum: `OvertimeStatus`, `OvertimeSource`, `DayType`, `UserRole`
-- [ ] Migrasi semua tabel (`ARCHITECTURE.md` §4), termasuk unique 1 SPV aktif per departemen
-- [ ] Middleware role, policy dasar, layout panel (sidebar + top bar) dan layout publik
-- [ ] Seeder: 1 admin, 3 departemen, 20 karyawan, 2 supervisor, contoh hari libur, pengaturan default
-- [ ] `.env.example` dengan `APP_TIMEZONE=Asia/Jakarta`, driver database/sync
+- [x] Laravel + starter kit React (Inertia, TS), registrasi dimatikan
+- [x] Tailwind + `tokens.css` dari `DESIGN.md`, font Plus Jakarta Sans & JetBrains Mono
+- [x] Enum: `OvertimeStatus`, `OvertimeSource`, `DayType`, `UserRole`
+- [x] Migrasi semua tabel (`ARCHITECTURE.md` §4), termasuk unique 1 SPV aktif per departemen
+- [x] Middleware role, policy dasar, layout panel (sidebar + top bar) dan layout publik
+- [x] Seeder: 1 admin, 3 departemen, 20 karyawan, 2 supervisor, contoh hari libur, pengaturan default
+- [x] `.env.example` dengan `APP_TIMEZONE=Asia/Jakarta`, driver database/sync
 
 ## Fase 2 — Logika inti (TDD)
 - [ ] `OvertimeCalculator` — test C1–C7

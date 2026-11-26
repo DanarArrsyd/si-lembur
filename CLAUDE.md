@@ -36,6 +36,7 @@ Jangan mengganti atau menambah framework/library besar tanpa persetujuan. Librar
 ```bash
 composer install && npm install
 cp .env.example .env && php artisan key:generate
+docker compose up -d        # MySQL 8 lokal di port 3307 (hanya dev)
 php artisan migrate --seed
 composer run dev            # server + vite
 php artisan test            # Pest
@@ -43,6 +44,7 @@ npm run test                # Vitest
 npm run build               # build asset produksi
 ./vendor/bin/pint           # format PHP
 npm run lint && npm run typecheck
+composer ci:check           # semua cek sekaligus (sama dengan CI); butuh npm run build dulu
 ```
 
 Perbarui bagian ini bila perintah berubah.

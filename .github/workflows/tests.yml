@@ -31,8 +31,15 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Prepare SQLite database
+        run: touch database/database.sqlite
+
       - name: Setup Application
         run: composer setup
+        env:
+          # .env.example memakai MySQL (dev lokal); CI cukup SQLite.
+          DB_CONNECTION: sqlite
+          DB_DATABASE: ${{ github.workspace }}/database/database.sqlite
 
       - name: Run CI Checks
         run: composer ci:check
