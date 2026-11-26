@@ -25,14 +25,14 @@ Fase N — selesai
 - [x] `.env.example` dengan `APP_TIMEZONE=Asia/Jakarta`, driver database/sync
 
 ## Fase 2 — Logika inti (TDD)
-- [ ] `OvertimeCalculator` — test C1–C7
-- [ ] `OvertimeDateRule` — test D1–D6 (pakai `Carbon::setTestNow`)
-- [ ] `DayTypeResolver` — test H1–H2
-- [ ] `OvertimeLimitChecker` — test H3–H5
-- [ ] `OverlapChecker` — test O1–O4
-- [ ] `OvertimeNumberGenerator` — aman dari race (test paralel sederhana)
-- [ ] `OvertimeWorkflow` — semua transisi status + audit log
-- [ ] `lib/overtime.ts` mirror kalkulator + test Vitest dengan kasus yang sama
+- [x] `OvertimeCalculator` — test C1–C7
+- [x] `OvertimeDateRule` — test D1–D6 (pakai `Carbon::setTestNow`)
+- [x] `DayTypeResolver` — test H1–H2
+- [x] `OvertimeLimitChecker` — test H3–H5
+- [x] `OverlapChecker` — test O1–O4
+- [x] `OvertimeNumberGenerator` — aman dari race (test paralel sederhana)
+- [x] `OvertimeWorkflow` — semua transisi status + audit log
+- [x] `lib/overtime.ts` mirror kalkulator + test Vitest dengan kasus yang sama
 
 ## Fase 3 — Form publik + cek status
 - [ ] Endpoint lookup karyawan (field terbatas, throttle)
