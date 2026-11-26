@@ -2,8 +2,13 @@
 
 declare(strict_types=1);
 
+use App\Enums\DateChoice;
+use App\Models\Employee;
+use App\Services\OvertimeInput;
+use App\Services\OvertimeWorkflow;
 use Illuminate\Foundation\Testing\DatabaseTruncation;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Validation\ValidationException;
 use Tests\TestCase;
 
 pest()->extend(TestCase::class)
@@ -22,3 +27,44 @@ pest()->extend(TestCase::class)
         }
     })
     ->in('Concurrency');
+
+/**
+ * Input form lembur untuk test workflow. Default: karyawan $employee, hari ini, 17:00–20:00.
+ *
+ * @param  array<string, mixed>  $overrides
+ */
+function overtimeInput(Employee $employee, array $overrides = []): OvertimeInput
+{
+    return new OvertimeInput(...[
+        'employeeId' => $employee->id,
+        'departmentId' => $employee->department_id,
+        'dateChoice' => DateChoice::TODAY,
+        'date' => null,
+        'startTime' => '17:00',
+        'endTime' => '20:00',
+        'breakMinutes' => 0,
+        'description' => 'Menyelesaikan pesanan produksi',
+        ...$overrides,
+    ]);
+}
+
+function workflow(): OvertimeWorkflow
+{
+    return app(OvertimeWorkflow::class);
+}
+
+/**
+ * Menjalankan $callback dan mengembalikan error ValidationException-nya.
+ *
+ * @return array<string, list<string>>
+ */
+function validationErrors(Closure $callback): array
+{
+    try {
+        $callback();
+    } catch (ValidationException $e) {
+        return $e->errors();
+    }
+
+    throw new RuntimeException('Expected a ValidationException');
+}
