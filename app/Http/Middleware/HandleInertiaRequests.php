@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Middleware;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -39,9 +42,30 @@ class HandleInertiaRequests extends Middleware
             ...parent::share($request),
             'name' => config('app.name'),
             'auth' => [
-                'user' => $request->user(),
+                'user' => $this->sharedUser($request->user()),
             ],
-            'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
+        ];
+    }
+
+    /**
+     * Hanya field yang dibutuhkan UI; email, password hash, dsb. tidak dikirim ke browser.
+     *
+     * @return array{id: int, name: string, username: string, role: string, department: array{id: int, name: string}|null}|null
+     */
+    private function sharedUser(?User $user): ?array
+    {
+        if ($user === null) {
+            return null;
+        }
+
+        $department = $user->department;
+
+        return [
+            'id' => $user->id,
+            'name' => $user->name,
+            'username' => $user->username,
+            'role' => $user->role->value,
+            'department' => $department === null ? null : ['id' => $department->id, 'name' => $department->name],
         ];
     }
 }

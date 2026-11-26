@@ -1,21 +1,21 @@
 import { createInertiaApp } from '@inertiajs/react';
 import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
-import AppLayout from '@/layouts/app-layout';
 import AuthLayout from '@/layouts/auth-layout';
-
-const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+import PanelLayout from '@/layouts/panel-layout';
+import PublicLayout from '@/layouts/public-layout';
 
 void createInertiaApp({
-    title: (title) => (title ? `${title} - ${appName}` : appName),
+    // DESIGN.md §8.1: "{Judul halaman} — SI-LEMBUR"
+    title: (title) => (title ? `${title} — SI-LEMBUR` : 'SI-LEMBUR'),
     layout: (name) => {
         switch (true) {
-            case name === 'welcome':
-                return null;
             case name.startsWith('auth/'):
                 return AuthLayout;
+            case name.startsWith('panel/'):
+                return PanelLayout;
             default:
-                return AppLayout;
+                return PublicLayout;
         }
     },
     strictMode: true,
@@ -28,6 +28,6 @@ void createInertiaApp({
         );
     },
     progress: {
-        color: '#4B5563',
+        color: '#1e6fd9',
     },
 });

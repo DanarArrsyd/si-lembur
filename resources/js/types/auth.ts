@@ -1,14 +1,14 @@
-export type User = {
+export type UserRole = 'ADMIN' | 'SUPERVISOR';
+
+/** Data user yang dibagikan server lewat HandleInertiaRequests::sharedUser(). */
+export type AuthUser = {
     id: number;
     name: string;
-    email: string;
-    avatar?: string;
-    email_verified_at: string | null;
-    created_at: string;
-    updated_at: string;
-    [key: string]: unknown;
+    username: string;
+    role: UserRole;
+    department: { id: number; name: string } | null;
 };
 
 export type Auth = {
-    user: User;
+    user: AuthUser | null;
 };

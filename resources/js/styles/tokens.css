@@ -1,0 +1,54 @@
+/* Token Industrial Blue — disalin apa adanya dari DESIGN.md §2. Ubah di DESIGN.md dulu. */
+:root {
+    /* Warna */
+    --canvas: #f4f6f9; /* latar halaman */
+    --surface: #ffffff; /* kartu, form, tabel, dialog, top bar */
+    --surface-sunken: #eef2f6; /* header tabel, field read-only */
+    --line: #d9e1e8; /* border kartu & divider, dekoratif saja */
+    --line-control: #7f8e9c; /* border input/select/checkbox (≥3:1) */
+    --ink: #1b2733; /* teks utama; jangan pernah #000 */
+    --ink-muted: #5b6b79; /* label, helper, metadata (≥4.8:1) */
+    --primary: #1e6fd9; /* 1 tombol utama per layar, link, focus ring, item nav aktif */
+    --primary-hover: #185bb3;
+    --primary-soft: #e8f0fc; /* baris terpilih, banner info, kartu total lembur */
+    --on-primary: #ffffff;
+    --sidebar: #0f1e2e; /* sidebar & panel login */
+    --sidebar-ink: #c3cfdb;
+    --sidebar-hover: #1a2e44;
+    --steel: #1f5f8b; /* data sekunder, seri grafik 2 */
+    --accent: #c97a2b; /* highlight 1 angka kritis; tanda, bukan teks */
+    --success: #15803d;
+    --success-soft: #eaf6ec; /* Disetujui */
+    --warning: #b45309;
+    --warning-soft: #fef3e0; /* Menunggu, lewat batas */
+    --danger: #b91c1c;
+    --danger-soft: #fdebec; /* Ditolak, error */
+
+    /* Tipografi */
+    --font-sans:
+        'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', monospace;
+
+    /* Spacing */
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 24px;
+    --space-6: 32px;
+
+    /* Radius */
+    --radius-sm: 4px; /* input, checkbox */
+    --radius-md: 6px; /* tombol, kartu, dialog, item nav */
+    --radius-pill: 999px; /* StatusPill & chip saja */
+
+    /* Shadow: hanya untuk yang melayang */
+    --shadow-float: 0 8px 24px rgba(15, 30, 46, 0.14); /* dropdown, bottom sheet, dialog */
+    --shadow-sticky: 2px 0 0 rgba(15, 30, 46, 0.06); /* tepi kolom sticky */
+
+    /* Ukuran (area panel) */
+    --sidebar-width: 240px;
+    --topbar-height: 56px;
+    --control-height: 36px;
+    --row-height: 40px;
+}

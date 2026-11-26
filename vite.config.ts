@@ -12,8 +12,13 @@ export default defineConfig({
             input: ['resources/css/app.css', 'resources/js/app.tsx'],
             refresh: true,
             fonts: [
-                bunny('Instrument Sans', {
-                    weights: [400, 500, 600],
+                bunny('Plus Jakarta Sans', {
+                    weights: [400, 500, 600, 700],
+                    display: 'swap',
+                }),
+                bunny('JetBrains Mono', {
+                    weights: [500, 600],
+                    display: 'swap',
                 }),
             ],
         }),
@@ -24,6 +29,11 @@ export default defineConfig({
             formVariants: true,
         }),
     ]),
+    test: {
+        environment: 'jsdom',
+        include: ['resources/js/**/*.test.{ts,tsx}'],
+        setupFiles: ['resources/js/test/setup.ts'],
+    },
     server: {
         watch: {
             ignored: [
