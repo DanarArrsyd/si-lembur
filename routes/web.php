@@ -2,9 +2,13 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Public\OvertimeFormController;
 use Illuminate\Support\Facades\Route;
 
-Route::inertia('/', 'public/form')->name('home');
+Route::get('/', [OvertimeFormController::class, 'show'])->name('home');
+Route::post('/lembur/periksa', [OvertimeFormController::class, 'review'])
+    ->middleware('throttle:public-overtime-review')
+    ->name('public.review');
 
 Route::middleware(['auth', 'role:ADMIN,SUPERVISOR'])->prefix('panel')->name('panel.')->group(function () {
     Route::inertia('/', 'panel/dashboard')->name('dashboard');

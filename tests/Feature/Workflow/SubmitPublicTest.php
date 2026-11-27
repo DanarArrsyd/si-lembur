@@ -11,14 +11,14 @@ use App\Models\Employee;
 use Carbon\CarbonImmutable;
 
 beforeEach(function () {
-    $this->now = CarbonImmutable::parse('2026-11-10 08:00');
+    $this->now = CarbonImmutable::parse('2026-11-10 22:00');
     $this->employee = Employee::factory()->create();
 });
 
 it('stores an overnight overtime on its start date (PRD §8 #2)', function () {
     $overtime = workflow()->submitPublic(overtimeInput($this->employee, [
         'dateChoice' => DateChoice::YESTERDAY, 'startTime' => '23:00', 'endTime' => '02:00', 'breakMinutes' => 30,
-    ]), $this->now);
+    ]), CarbonImmutable::parse('2026-11-10 08:00'));
 
     expect($overtime)
         ->overtime_date->toDateString()->toBe('2026-11-09')

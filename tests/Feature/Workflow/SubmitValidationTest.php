@@ -7,7 +7,7 @@ use App\Models\Employee;
 use Carbon\CarbonImmutable;
 
 beforeEach(function () {
-    $this->now = CarbonImmutable::parse('2026-11-10 08:00');
+    $this->now = CarbonImmutable::parse('2026-11-10 20:00');
     $this->employee = Employee::factory()->create();
 });
 

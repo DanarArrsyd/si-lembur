@@ -6,21 +6,26 @@ import { BottomSheet } from './bottom-sheet';
 type PickerValue = string | number;
 
 type Props<Value extends PickerValue> = {
+    id?: string;
     label: string;
     value: Value | null;
     onChange: (value: Value) => void;
     options: readonly (Value | { value: Value; label: string })[];
     anchor?: Value;
+    error?: string;
 };
 
 export function TimePicker<Value extends PickerValue>({
+    id: fieldId,
     label,
     value,
     onChange,
     options,
     anchor,
+    error,
 }: Props<Value>) {
-    const id = useId();
+    const generatedId = useId();
+    const id = fieldId ?? generatedId;
     const labelId = `${id}-label`;
     const valueId = `${id}-value`;
     const list = useRef<HTMLUListElement>(null);
@@ -108,10 +113,13 @@ export function TimePicker<Value extends PickerValue>({
                 }}
                 trigger={
                     <button
+                        id={id}
                         type="button"
                         aria-labelledby={`${labelId} ${valueId}`}
+                        aria-invalid={error ? true : undefined}
+                        aria-describedby={error ? `${id}-error` : undefined}
                         disabled={items.length === 0}
-                        className="flex h-[52px] w-full items-center justify-between gap-3 rounded-sm border border-line-control bg-surface px-3 text-left text-[17px] text-ink disabled:bg-surface-sunken"
+                        className="flex h-[52px] w-full items-center justify-between gap-3 rounded-sm border border-line-control bg-surface px-3 text-left text-[17px] text-ink disabled:bg-surface-sunken aria-invalid:border-danger aria-invalid:bg-danger-soft"
                     >
                         {selected >= 0 ? (
                             <span id={valueId} className="tabular font-mono">
@@ -161,6 +169,11 @@ export function TimePicker<Value extends PickerValue>({
                     ))}
                 </ul>
             </BottomSheet>
+            {error && (
+                <p id={`${id}-error`} className="mt-1 text-sm text-danger">
+                    {error}
+                </p>
+            )}
         </div>
     );
 }

@@ -4,21 +4,26 @@ import { searchEmployees } from '@/lib/employee-search';
 import type { Employee } from '@/lib/employee-search';
 
 type Props = {
+    id?: string;
     departmentId: number | null;
     employees: Employee[];
     value: number | null;
     onChange: (employeeId: number | null) => void;
+    unavailable?: boolean;
     error?: string;
 };
 
 export function Typeahead({
+    id: fieldId,
     departmentId,
     employees,
     value,
     onChange,
+    unavailable = false,
     error,
 }: Props) {
-    const id = useId();
+    const generatedId = useId();
+    const id = fieldId ?? generatedId;
     const listId = `${id}-options`;
     const descriptionId = `${id}-description`;
     const previousDepartment = useRef(departmentId);
@@ -26,7 +31,7 @@ export function Typeahead({
     const [open, setOpen] = useState(false);
     const [activeId, setActiveId] = useState<number | null>(null);
     const selected = employees.find((employee) => employee.id === value);
-    const disabled = departmentId === null;
+    const disabled = departmentId === null || unavailable;
     const options = searchEmployees(employees, query ?? '');
     const listOpen = open && !disabled && options.length > 0;
     const activeIndex = options.findIndex(
@@ -181,7 +186,8 @@ export function Typeahead({
                         NIK {selected.nik}
                     </p>
                 ) : (
-                    !error && (
+                    !error &&
+                    !unavailable && (
                         <p className="text-ink-muted">
                             {disabled
                                 ? 'Pilih departemen terlebih dahulu.'

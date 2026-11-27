@@ -62,6 +62,7 @@ tests/
 | Method | Path | Akses | Fungsi |
 |---|---|---|---|
 | GET | `/` | Publik | Form lembur |
+| POST | `/lembur/periksa` | Publik, throttle | Validasi dan ringkasan tanpa menyimpan pengajuan |
 | POST | `/lembur` | Publik, throttle | Submit |
 | GET | `/lembur/sukses/{number}` | Publik (signed URL) | Halaman sukses |
 | GET | `/status` | Publik | Cek status |
@@ -126,7 +127,7 @@ Simpan datetime sebagai waktu lokal `Asia/Jakarta` (konsisten dengan `APP_TIMEZO
 ## 5. Keamanan
 
 **Form publik**
-- Throttle submit **10/menit per IP** (HP pabrik sering satu IP Wi-Fi, jangan lebih ketat). Endpoint lookup 60/menit per IP.
+- Throttle periksa dan submit masing-masing **10/menit per IP** (HP pabrik sering satu IP Wi-Fi, jangan lebih ketat). Endpoint lookup 60/menit per IP.
 - Honeypot field + CSRF.
 - Endpoint karyawan hanya mengembalikan `id`, `nik`, `name` karyawan aktif.
 - Halaman sukses memakai signed URL agar nomor pengajuan orang lain tidak bisa ditebak-buka.

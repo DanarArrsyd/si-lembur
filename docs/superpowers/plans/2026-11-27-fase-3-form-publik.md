@@ -106,9 +106,10 @@ tests/Feature/Public/*Test.php, resources/js/**/*.test.tsx
 - `POST /lembur/periksa` (throttle `10,1`) → redirect back dengan `Inertia::flash('review', …)`; error → field errors.
 - Form: urutan field PRD §4.1; total real-time di kartu `primary-soft` (mono 28px + "2 jam 30 menit"); "Lanjut periksa" sticky. Layar periksa: ringkasan + info netral lewat batas (teks BUSINESS_RULES §4; versi mingguan: "Total lembur minggu ini melebihi 18 jam. Pengajuan tetap dikirim dan akan diperiksa supervisor.") + tombol "Kirim lembur" (primary) & "Ubah" (secondary).
 
-- [ ] Test Feature: props form benar pada 11:59 (2 pilihan) dan 12:00 (1 pilihan); periksa 09/11 23:00–02:00 istirahat 30 → review 150 menit, tanggal 09/11; periksa tidak menyimpan apa pun; periksa dengan R6/R7/R8 → error field; honeypot → 422; 11× periksa → 429; info lewat batas harian muncul.
-- [ ] Test Vitest: total real-time "2 jam 30 menit (2,5 jam)" untuk 23:00–02:00/30; R2 tampil di bawah Jam selesai tanpa request; ringkasan error muncul bila > 1 error; Review Focus 1 (error `overtime_date` dari server ditampilkan di field Tanggal).
-- [ ] Implement → PASS → commit.
+- [x] Tes Feature mencakup pilihan tanggal sebelum dan sesudah cutoff, hitung lintas tengah malam, validasi aturan bisnis, honeypot (422), throttle per IP (429), dan peringatan sesuai pengaturan. Pemeriksaan tidak membuat pengajuan, audit, atau nomor.
+- [x] Tes Vitest mencakup total 150 menit, pesan jam selesai, ringkasan beberapa error, dan pemulihan isian setelah cutoff atau kembali mengubah ringkasan.
+- [x] Implementasi, verifikasi, dan commit. Form menyertakan tanggal yang ditampilkan agar server bisa meminta pilihan ulang setelah pergantian hari. Validasi publik memakai jam server untuk memastikan lembur sudah selesai. Tombol "Kirim lembur" diaktifkan pada Task 6.
+- Build produksi pada Task 5 memuat 144.625 byte gzip JavaScript awal untuk form lengkap. Target 90 kB pada Task 1 masih terbuka.
 
 ### Task 6: Kirim + halaman sukses
 

@@ -19,6 +19,8 @@ Lembur selalu dicatat pada **tanggal mulai**.
 | Tanggal lain / tanggal maju | Tidak pernah |
 
 - Server memvalidasi ulang saat submit. Contoh: form dibuka 11:58, dikirim 12:01 dengan "Kemarin" → tolak dengan pesan "Batas input lembur kemarin sudah lewat (12:00). Hubungi supervisor untuk input lembur kemarin."
+- Form mengirimkan tanggal yang ditampilkan bersama pilihan "Hari ini" atau "Kemarin". Jika pilihan tersebut sudah merujuk ke tanggal lain menurut server, karyawan harus memilih kembali.
+- Form publik dipakai setelah lembur selesai. Jika jam selesai yang telah dihitung masih di masa depan menurut waktu server, tampilkan "Jam selesai belum lewat. Catat lembur setelah selesai."
 - Tujuan: lembur yang lewat tengah malam (23:00–02:00) bisa diinput pagi harinya dengan tanggal yang benar.
 
 ### 1.2 Input oleh Supervisor/Admin

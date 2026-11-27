@@ -13,11 +13,11 @@ use Carbon\CarbonImmutable;
 use Illuminate\Auth\Access\AuthorizationException;
 
 beforeEach(function () {
-    Carbon\Carbon::setTestNow('2026-11-10 09:00');
+    Carbon\Carbon::setTestNow('2026-11-10 22:00');
     $this->department = Department::factory()->create();
     $this->supervisor = User::factory()->supervisor($this->department)->create();
     $this->employee = Employee::factory()->for($this->department)->create();
-    $this->overtime = workflow()->submitPublic(overtimeInput($this->employee), CarbonImmutable::parse('2026-11-10 08:00'));
+    $this->overtime = workflow()->submitPublic(overtimeInput($this->employee), CarbonImmutable::parse('2026-11-10 20:00'));
     AuditLog::query()->delete();
 });
 
@@ -27,7 +27,7 @@ it('approves a pending overtime', function () {
     expect($approved)
         ->status->toBe(OvertimeStatus::APPROVED)
         ->approved_by->toBe($this->supervisor->id)
-        ->approved_at->format('Y-m-d H:i')->toBe('2026-11-10 09:00')
+        ->approved_at->format('Y-m-d H:i')->toBe('2026-11-10 22:00')
         ->and(AuditLog::query()->sole())
         ->action->toBe('overtime.approved')
         ->before->toMatchArray(['status' => 'PENDING'])
@@ -47,7 +47,7 @@ it('rejects with a required reason and allows resubmission (PRD §8 #7)', functi
         ->reject_reason->toBe('Jam tidak sesuai absen')
         ->and(AuditLog::query()->sole()->reason)->toBe('Jam tidak sesuai absen');
 
-    $again = workflow()->submitPublic(overtimeInput($this->employee), CarbonImmutable::parse('2026-11-10 09:30'));
+    $again = workflow()->submitPublic(overtimeInput($this->employee), CarbonImmutable::parse('2026-11-10 22:00'));
     expect($again->id)->not->toBe($this->overtime->id);
 });
 
@@ -101,7 +101,7 @@ it('forbids supervisors of another department on every action (PRD §8 #6)', fun
 ]);
 
 it('approves many with one log per record', function () {
-    $second = workflow()->submitPublic(overtimeInput($this->employee, ['startTime' => '20:00', 'endTime' => '21:00']), CarbonImmutable::parse('2026-11-10 08:30'));
+    $second = workflow()->submitPublic(overtimeInput($this->employee, ['startTime' => '20:00', 'endTime' => '21:00']), CarbonImmutable::parse('2026-11-10 21:00'));
     AuditLog::query()->delete();
 
     $approved = workflow()->approveMany($this->supervisor, [$this->overtime->id, $second->id]);
