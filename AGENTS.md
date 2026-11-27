@@ -16,6 +16,7 @@ Web internal untuk mencatat lembur karyawan pabrik PT Kenco Manufaktur Indonesia
 
 | File                     | Isi                                                                         | Baca saat                                  |
 | ------------------------ | --------------------------------------------------------------------------- | ------------------------------------------ |
+| `docs/HANDOFF.md`        | Status kerja terakhir, task berikutnya, hal yang menunggu jawaban           | **Paling awal**, sebelum melanjutkan       |
 | `docs/PRD.md`            | Role, alur, fitur per halaman, export, di luar cakupan, acceptance criteria | Sebelum mulai fase apa pun                 |
 | `docs/BUSINESS_RULES.md` | Aturan tanggal, perhitungan jam, jenis hari, batas lembur, overlap, status  | Sebelum menyentuh logika lembur            |
 | `docs/ARCHITECTURE.md`   | Stack, struktur folder, skema DB, service, keamanan                         | Sebelum membuat migrasi, model, controller |
