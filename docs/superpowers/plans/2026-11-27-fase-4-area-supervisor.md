@@ -64,10 +64,12 @@ Tes tambahan memastikan cookie “Ingat saya” lama untuk akun nonaktif tidak t
 
 ### Task 2 — Dashboard dan scope pembacaan
 
-- [ ] Buat `tests/Feature/Panel/DashboardTest.php`. Assert KPI supervisor mengecualikan departemen lain, Admin melihat kedua departemen, menit hanya dari pengajuan Disetujui pada bulan berjalan, dan pengajuan dengan dua flag dihitung sekali. Bekukan jam Jakarta pada awal bulan dan masukkan lembur yang mulai akhir bulan lalu dan selesai setelah tengah malam.
-- [ ] Jalankan file tes dan lihat assertion KPI gagal pada dashboard placeholder.
-- [ ] Sambungkan `DashboardController::index(Request $request): Response` ke `GET /panel` dan pertahankan nama rute `panel.dashboard`. Pakai `PanelOvertimeQuery::visibleTo()` untuk agregat dan baris antrean. Tampilkan empat KPI, hingga lima pengajuan Menunggu terbaru, dan tautan ke antrean setelah Task 3 aktif.
-- [ ] Tampilkan kartu angka dengan komponen panel, pakai ulang `StatusPill` serta formatter tanggal dan durasi. Jalankan tes dashboard dan `composer ci:check`. Commit `feat(panel): show scoped overtime dashboard`.
+- [x] Buat `tests/Feature/Panel/DashboardTest.php`. Assert KPI supervisor mengecualikan departemen lain, Admin melihat kedua departemen, menit hanya dari pengajuan Disetujui pada bulan berjalan, dan pengajuan dengan dua flag dihitung sekali. Bekukan jam Jakarta pada awal bulan dan masukkan lembur yang mulai akhir bulan lalu dan selesai setelah tengah malam.
+- [x] Jalankan file tes dan lihat assertion KPI gagal pada dashboard placeholder.
+- [x] Sambungkan `DashboardController::index(Request $request): Response` ke `GET /panel` dan pertahankan nama rute `panel.dashboard`. Pakai `PanelOvertimeQuery::visibleTo()` untuk agregat dan baris antrean. Tampilkan empat KPI, hingga lima pengajuan Menunggu terbaru, dan tautan ke antrean setelah Task 3 aktif.
+- [x] Tampilkan kartu angka dengan komponen panel, pakai ulang `StatusPill` serta formatter tanggal dan durasi. Jalankan tes dashboard dan `composer ci:check`. Commit `7f44c82`.
+
+Tiga tes dashboard lulus di SQLite dan MySQL 8. Supervisor diuji di browser 360 px dan Admin di 1280 px. Tautan dashboard akan aktif ketika Task 3 mendaftarkan rute `panel.approvals.index`.
 
 ### Task 3 — Antrean, setujui, dan tolak
 

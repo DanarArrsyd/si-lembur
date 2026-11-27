@@ -4,7 +4,7 @@ Untuk agent AI mana pun (Claude Code, Codex, Cursor, dll.) yang melanjutkan peke
 
 **Perbarui file ini di akhir setiap task** (status, commit, langkah berikutnya). Bila isi file ini berbeda dengan checkbox di rencana fase atau `docs/ROADMAP.md`, yang benar adalah checkbox + `git log`.
 
-Terakhir diperbarui: 2026-11-27, setelah Fase 4 Task 1.
+Terakhir diperbarui: 2026-11-28, setelah Fase 4 Task 2.
 
 ## Posisi sekarang
 
@@ -13,7 +13,7 @@ Terakhir diperbarui: 2026-11-27, setelah Fase 4 Task 1.
 | 1 Fondasi | Selesai |
 | 2 Logika inti | Selesai |
 | 3 Form publik + cek status | Selesai |
-| 4 Area supervisor | Berjalan. Task 1 selesai, berikutnya Task 2. |
+| 4 Area supervisor | Berjalan. Task 1–2 selesai, berikutnya Task 3. |
 | 5–7 | Belum mulai |
 
 Rencana Fase 3: `docs/superpowers/plans/2026-11-27-fase-3-form-publik.md`. Disetujui pemilik proyek pada 2026-11-27, termasuk delapan keputusan di bagian "Keputusan". Rencana Fase 4 disetujui pada 2026-11-27 dan tersedia di `docs/superpowers/plans/2026-11-27-fase-4-area-supervisor.md`.
@@ -39,15 +39,19 @@ Verifikasi Task 8: build produksi dan `composer ci:check` lulus lokal. Pest lulu
 | Task | Isi | Status | Commit |
 |---|---|---|---|
 | 1 | Login dan audit | Selesai | `2c4e78c` |
-| 2 | Dashboard dan scope pembacaan | Berikutnya | – |
-| 3 | Antrean, setujui, dan tolak | Belum | – |
+| 2 | Dashboard dan scope pembacaan | Selesai | `7f44c82` |
+| 3 | Antrean, setujui, dan tolak | Berikutnya | – |
 | 4 | Riwayat dan batalkan persetujuan | Belum | – |
 | 5 | Input atas nama dan edit | Belum | – |
 | 6 | Verifikasi dan penutupan | Belum | – |
 
 Verifikasi Task 1: build produksi dan `composer ci:check` lulus lokal. Pest 206 lulus dan dua tes konkurensi dilewati di SQLite. Vitest 68 lulus. Browser 360 dan 1280 px menampilkan pemberitahuan pada sesi yang berakhir setelah penonaktifan. Login aktif berhasil, login ulang untuk akun nonaktif ditolak, dan data audit uji mencatat satu keberhasilan serta dua kegagalan.
 
-## Hal yang perlu diketahui sebelum Fase 4 Task 2
+Verifikasi Task 2: build produksi dan `composer ci:check` lulus lokal. Pest 209 lulus dan dua tes konkurensi khusus MySQL dilewati di SQLite. Vitest 68 lulus. Tiga tes dashboard juga lulus di MySQL 8. Uji browser 360 px sebagai Supervisor dan 1280 px sebagai Admin mengonfirmasi scope, KPI, dan layout.
+
+## Hal yang perlu diketahui sebelum Fase 4 Task 3
+
+- **Dashboard** memakai `PanelOvertimeQuery::visibleTo()` untuk scope snapshot departemen dan `row()` untuk payload `PanelOvertimeRow`. `OvertimeList` menampilkan kartu di bawah 640 px dan tabel pada layar lebih lebar. Beri nama rute daftar antrean `panel.approvals.index` agar tautan dari dashboard aktif.
 
 - **Layout halaman:** `resources/js/app.tsx` tidak memilih layout. Setiap halaman menyatakan sendiri: `Page.layout = [PublicLayout, { title: '…' }]`. Test `resources/js/pages/page-layouts.test.ts` memastikan ini.
 - **Bundle publik:** komponen yang dipakai form publik memakai `clsx`, bukan `cn()` dari `@/lib/utils`, supaya `tailwind-merge` tidak ikut termuat. JS awal pada pengukuran akhir sekitar 147,0 KB gzip di `/` dan 126,9 KB di `/status`. Anggaran awal 90 KB untuk form belum tercapai. Kedua halaman memenuhi ambang Lighthouse mobile.
