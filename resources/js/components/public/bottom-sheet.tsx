@@ -26,6 +26,17 @@ export function BottomSheet({
                 <Dialog.Content
                     aria-describedby={undefined}
                     onOpenAutoFocus={onOpenAutoFocus}
+                    onCloseAutoFocus={(event) => {
+                        const { activeElement, body, documentElement } =
+                            document;
+                        if (
+                            activeElement &&
+                            activeElement !== body &&
+                            activeElement !== documentElement
+                        ) {
+                            event.preventDefault();
+                        }
+                    }}
                     className="fixed inset-x-0 bottom-0 z-50 mx-auto flex max-h-[min(78dvh,28rem)] w-full max-w-[480px] flex-col rounded-t-md border border-line bg-surface pb-[env(safe-area-inset-bottom)] shadow-[var(--shadow-float)]"
                 >
                     <div className="flex items-center justify-between gap-2 border-b border-line px-4 py-1">

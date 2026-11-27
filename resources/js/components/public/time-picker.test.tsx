@@ -1,4 +1,5 @@
 import {
+    act,
     fireEvent,
     render,
     screen,
@@ -90,6 +91,41 @@ it('prefers the selected time, accepts a new time, and returns focus', async () 
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     expect(trigger).toHaveAccessibleName('Jam selesai 02:00');
     await waitFor(() => expect(trigger).toHaveFocus());
+});
+
+it('preserves focus when the user moves to the next field as the sheet closes', async () => {
+    vi.useFakeTimers();
+
+    try {
+        render(
+            <>
+                <TimePicker
+                    label="Istirahat"
+                    value={0}
+                    options={breakOptions()}
+                    onChange={vi.fn()}
+                />
+                <textarea aria-label="Kegiatan lembur" />
+            </>,
+        );
+        fireEvent.click(
+            screen.getByRole('button', { name: 'Istirahat 0 menit' }),
+        );
+        fireEvent.click(screen.getByRole('option', { name: '30 menit' }));
+
+        const description = screen.getByRole('textbox', {
+            name: 'Kegiatan lembur',
+        });
+        description.focus();
+        expect(description).toHaveFocus();
+
+        await act(async () => {
+            vi.runOnlyPendingTimers();
+        });
+        expect(description).toHaveFocus();
+    } finally {
+        vi.useRealTimers();
+    }
 });
 
 it('selects numeric break values from the keyboard', () => {
