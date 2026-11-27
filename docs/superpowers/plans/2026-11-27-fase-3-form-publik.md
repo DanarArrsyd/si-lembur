@@ -71,10 +71,11 @@ tests/Feature/Public/*Test.php, resources/js/**/*.test.tsx
 
 **Interfaces — Produces:**
 - `GET /api/departments/{department}/employees` → `[{id, nik, name}]` karyawan aktif, urut nama. Departemen nonaktif/tidak ada → 404. Throttle `60,1`.
-- `TRUSTED_PROXIES` env → `$middleware->trustProxies(at: ...)` (kosong = tidak ada).
+- `TRUSTED_PROXIES` menerima daftar IP atau CIDR yang dipisahkan koma. Middleware bawaan Laravel membacanya dari `config/trustedproxy.php`. Nilai kosong menghasilkan daftar tanpa proxy tepercaya.
 
-- [ ] Test: hanya 3 field; karyawan nonaktif dan departemen lain tidak ikut; departemen nonaktif 404; request ke-61 dalam semenit → 429.
-- [ ] Implement → PASS → commit.
+- [x] Test: respons hanya memuat tiga field karyawan aktif, urut nama. Departemen nonaktif, tidak tersedia, atau ID tidak valid menghasilkan 404. Request ke-61 dalam semenit dari IP yang sama menghasilkan 429, termasuk saat berganti departemen.
+- [x] Test: alamat klien dari header diterima jika koneksi datang dari proxy terkonfigurasi. Tanpa proxy tepercaya, middleware memakai IP koneksi.
+- [x] Implementasi, verifikasi, dan commit.
 
 ### Task 3: Komponen Typeahead (ARIA combobox, fuse.js)
 
