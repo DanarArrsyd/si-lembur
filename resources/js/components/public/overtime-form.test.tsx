@@ -1,7 +1,8 @@
 import { router } from '@inertiajs/react';
-import { fireEvent, render, screen, within } from '@testing-library/react';
+import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import OvertimeForm from '@/pages/public/form';
+import type { OvertimeReview } from '@/types/public-overtime';
 
 const today = {
     value: 'TODAY',
@@ -14,6 +15,23 @@ const yesterday = {
     date: '2026-11-09',
 } as const;
 const employee = { id: 7, name: 'Budi Santoso', nik: '001' };
+const review: OvertimeReview = {
+    date: '2026-11-09',
+    start_at: '2026-11-09 23:00',
+    end_at: '2026-11-10 02:00',
+    break_minutes: 30,
+    total_minutes: 150,
+    day_type: 'HARI_KERJA',
+    employee,
+    department: 'Produksi',
+    description: 'Menyelesaikan pesanan',
+    exceeds_daily_limit: true,
+    exceeds_weekly_limit: false,
+    daily_limit_minutes: 120,
+    weekly_limit_minutes: 1080,
+};
+type PostOptions = NonNullable<Parameters<typeof router.post>[2]>;
+const visit = {} as Parameters<NonNullable<PostOptions['onFinish']>>[0];
 const props = {
     departments: [{ id: 1, name: 'Produksi' }],
     dateChoices: [today, yesterday],
@@ -60,23 +78,8 @@ it('previews overnight duration, opens the server review, and retains the draft 
     const post = vi
         .spyOn(router, 'post')
         .mockImplementation((_url, _data, options) => {
-            options?.onFlash?.({
-                review: {
-                    date: '2026-11-09',
-                    start_at: '2026-11-09 23:00',
-                    end_at: '2026-11-10 02:00',
-                    break_minutes: 30,
-                    total_minutes: 150,
-                    day_type: 'HARI_KERJA',
-                    employee,
-                    department: 'Produksi',
-                    description: 'Menyelesaikan pesanan',
-                    exceeds_daily_limit: true,
-                    exceeds_weekly_limit: false,
-                    daily_limit_minutes: 120,
-                    weekly_limit_minutes: 1080,
-                },
-            });
+            options?.onFlash?.({ review });
+            options?.onFinish?.(visit);
         });
     render(<OvertimeForm {...props} />);
     await fillOvernight();
@@ -95,7 +98,7 @@ it('previews overnight duration, opens the server review, and retains the draft 
     expect(screen.getByRole('heading', { name: 'Periksa lagi' })).toBeVisible();
     expect(screen.getByText('02:00 · 10 Nov 2026')).toBeVisible();
     expect(screen.getByText(/melebihi 2 jam per hari/)).toBeVisible();
-    expect(screen.getByRole('button', { name: 'Kirim lembur' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Kirim lembur' })).toBeEnabled();
     fireEvent.click(screen.getByRole('button', { name: 'Ubah' }));
     expect(screen.getByRole('combobox', { name: 'Nama' })).toHaveValue(
         'Budi Santoso',
@@ -104,6 +107,56 @@ it('previews overnight duration, opens the server review, and retains the draft 
         'Menyelesaikan pesanan',
     );
     expect(fetch).toHaveBeenCalledOnce();
+});
+
+it('sends only once while pending and returns to the draft on a server validation error', async () => {
+    const post = vi
+        .spyOn(router, 'post')
+        .mockImplementation((url, _data, options) => {
+            if (url === '/lembur/periksa') {
+                options?.onFlash?.({ review });
+                options?.onFinish?.(visit);
+            } else {
+                options?.onStart?.(visit);
+            }
+        });
+    render(<OvertimeForm {...props} />);
+    await fillOvernight();
+    fireEvent.click(screen.getByRole('button', { name: 'Lanjut periksa' }));
+    const button = screen.getByRole('button', { name: 'Kirim lembur' });
+
+    act(() => {
+        button.click();
+        button.click();
+    });
+
+    expect(post).toHaveBeenCalledTimes(2);
+    expect(post).toHaveBeenLastCalledWith(
+        '/lembur',
+        expect.objectContaining({
+            employee_id: 7,
+            overtime_date: '2026-11-09',
+            end_time: '02:00',
+        }),
+        expect.anything(),
+    );
+    expect(screen.getByRole('button', { name: 'Mengirim…' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Ubah' })).toBeDisabled();
+
+    const options = post.mock.lastCall?.[2];
+    act(() => {
+        options?.onError?.({
+            start_time: 'Sudah ada lembur di jam yang sama.',
+        });
+        options?.onFinish?.(visit);
+    });
+    expect(screen.getByRole('heading', { name: 'Isi lembur' })).toBeVisible();
+    expect(
+        screen.getByRole('button', { name: 'Jam mulai 23:00' }),
+    ).toHaveAccessibleDescription('Sudah ada lembur di jam yang sama.');
+    expect(screen.getByLabelText('Kegiatan lembur')).toHaveValue(
+        'Menyelesaikan pesanan',
+    );
 });
 
 it('shows equal times under the end time and summarizes missing fields without a request', () => {

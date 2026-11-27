@@ -11,7 +11,7 @@ import PublicLayout from '@/layouts/public-layout';
 import type { Employee } from '@/lib/employee-search';
 import { calculateOvertime } from '@/lib/overtime';
 import { breakOptions, timeOptions } from '@/lib/time-options';
-import { review as reviewRoute } from '@/routes/public';
+import { review as reviewRoute, store as submitRoute } from '@/routes/public';
 import type { DateChoice, OvertimeReview } from '@/types/public-overtime';
 
 type Props = {
@@ -91,6 +91,7 @@ export default function OvertimeForm({
     const [requestError, setRequestError] = useState('');
     const heading = useRef<HTMLHeadingElement>(null);
     const editing = useRef(false);
+    const requestInFlight = useRef(false);
     const { data, processing } = form;
     const lookup = useEmployeeLookup(data.department_id);
     const selectedDate = dateChoices.find(
@@ -152,7 +153,7 @@ export default function OvertimeForm({
         }
     }
 
-    function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    function handleReview(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
         if (processing) return;
 
@@ -181,12 +182,24 @@ export default function OvertimeForm({
             return;
         }
 
-        form.post(reviewRoute.url(), {
+        postOvertime('review');
+    }
+
+    function postOvertime(action: 'review' | 'submit') {
+        if (requestInFlight.current) return;
+
+        requestInFlight.current = true;
+        setRequestError('');
+
+        const sending = action === 'submit';
+        form.post(sending ? submitRoute.url() : reviewRoute.url(), {
+            preserveState: sending ? 'errors' : true,
             preserveScroll: 'errors',
             onFlash: ({ review: nextReview }) => {
                 if (nextReview) setReview(nextReview);
             },
             onError: (serverErrors) => {
+                if (sending) setReview(null);
                 focusErrors(
                     fields.filter(
                         (field) =>
@@ -200,7 +213,9 @@ export default function OvertimeForm({
                 setRequestError(
                     response.status === 429
                         ? 'Terlalu banyak percobaan. Tunggu sebentar, lalu coba lagi.'
-                        : 'Pemeriksaan belum berhasil. Coba lagi.',
+                        : sending
+                          ? 'Pengiriman belum terkonfirmasi. Coba lagi.'
+                          : 'Pemeriksaan belum berhasil. Coba lagi.',
                 );
                 return false;
             },
@@ -210,6 +225,9 @@ export default function OvertimeForm({
                 );
                 return false;
             },
+            onFinish: () => {
+                requestInFlight.current = false;
+            },
         });
     }
 
@@ -218,8 +236,12 @@ export default function OvertimeForm({
             <ReviewCard
                 review={review}
                 headingRef={heading}
+                processing={processing}
+                requestError={requestError}
+                onSubmit={() => postOvertime('submit')}
                 onEdit={() => {
                     editing.current = true;
+                    setRequestError('');
                     setReview(null);
                 }}
             />
@@ -227,7 +249,7 @@ export default function OvertimeForm({
     }
 
     return (
-        <form onSubmit={handleSubmit} noValidate>
+        <form onSubmit={handleReview} noValidate>
             <h1
                 ref={heading}
                 tabIndex={-1}

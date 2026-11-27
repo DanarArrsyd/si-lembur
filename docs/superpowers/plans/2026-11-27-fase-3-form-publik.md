@@ -117,9 +117,10 @@ tests/Feature/Public/*Test.php, resources/js/**/*.test.tsx
 - `POST /lembur` (throttle `10,1`) → `submitPublic` → redirect 303 ke `URL::temporarySignedRoute('public.success', now()->addDay(), ['number' => …])`.
 - `GET /lembur/sukses/{number}` (middleware `signed`) → `public/success`: nomor (mono), ringkasan, StatusPill "Menunggu", teks "Lembur terkirim. Menunggu persetujuan supervisor.", tombol "Isi lembur lagi" (ke `/`, form kosong) dan "Cek status" (ke `/status?department=…&employee=…`).
 
-- [ ] Test Feature: kirim → 1 baris PENDING + redirect ke URL bertanda tangan; URL tanpa tanda tangan → 403; nomor tidak ada → 404; kirim dengan data ditolak tidak menyimpan.
-- [ ] Test Vitest: tombol Kirim nonaktif + "Mengirim…" selama proses (Review Focus 4).
-- [ ] Implement → PASS → commit.
+- [x] Test Feature: pengiriman membuat satu pengajuan MENUNGGU beserta audit log dan mengembalikan redirect 303 ke bukti bertanda tangan. Tautan tanpa tanda tangan atau kedaluwarsa menghasilkan 403. Nomor yang tidak ada menghasilkan 404. Pengajuan ditolak, duplikat, dan honeypot tidak menambah data.
+- [x] Test Vitest: dua klik menghasilkan satu permintaan simpan. Tombol menampilkan "Mengirim…" dan nonaktif selama proses. Jika server menolak, form kembali terbuka dengan isian dan pesan validasi.
+- [x] Implementasi, verifikasi, dan commit. Browser 360 px membuktikan tombol Back dan "Isi lembur lagi" membuka form kosong. Bukti pengajuan juga diperiksa di 1280 px.
+- Tombol "Cek status" diaktifkan di Task 7 bersama mekanisme akses riwayat. Sampai saat itu, halaman tautan kedaluwarsa mengarahkan karyawan ke supervisor.
 
 ### Task 7: Cek status
 
