@@ -4,7 +4,7 @@ Untuk agent AI mana pun (Claude Code, Codex, Cursor, dll.) yang melanjutkan peke
 
 **Perbarui file ini di akhir setiap task** (status, commit, langkah berikutnya). Bila isi file ini berbeda dengan checkbox di rencana fase atau `docs/ROADMAP.md`, yang benar adalah checkbox + `git log`.
 
-Terakhir diperbarui: 2026-11-27, setelah Fase 3 Task 4.
+Terakhir diperbarui: 2026-11-27, setelah Fase 3 Task 5.
 
 ## Posisi sekarang
 
@@ -12,7 +12,7 @@ Terakhir diperbarui: 2026-11-27, setelah Fase 3 Task 4.
 |---|---|
 | 1 Fondasi | Selesai |
 | 2 Logika inti | Selesai |
-| 3 Form publik + cek status | **Berjalan**: Task 0–4 selesai, **berikutnya Task 5** |
+| 3 Form publik + cek status | **Berjalan**: Task 0–5 selesai, **berikutnya Task 6** |
 | 4–7 | Belum mulai |
 
 Rencana aktif: `docs/superpowers/plans/2026-11-27-fase-3-form-publik.md`. Sudah disetujui pemilik proyek pada 2026-11-27, termasuk 8 keputusan di bagian "Keputusan". Jangan menanyakan ulang keputusan itu.
@@ -26,18 +26,18 @@ Rencana aktif: `docs/superpowers/plans/2026-11-27-fase-3-form-publik.md`. Sudah 
 | 2 | Endpoint daftar karyawan + `TRUSTED_PROXIES` | Selesai | `c70d38c` |
 | 3 | Pencarian nama (fuse.js) + komponen Typeahead | Selesai | `4eba79a` |
 | 4 | TimePicker + BottomSheet | Selesai | `d232af5` |
-| 5 | Form publik + layar "Periksa lagi" | **Berikutnya** | – |
-| 6 | Kirim + halaman sukses | Belum | – |
+| 5 | Form publik + layar "Periksa lagi" | Selesai | `09ae983` |
+| 6 | Kirim + halaman sukses | **Berikutnya** | – |
 | 7 | Halaman cek status | Belum | – |
 | 8 | Verifikasi (360px/412px, Lighthouse), laporan fase | Belum | – |
 
-Verifikasi Task 4: build produksi dan `composer ci:check` lulus lokal (Pest 178 lulus + 2 tes konkurensi dilewati di SQLite, Vitest 51 lulus). Uji TimePicker lewat halaman sementara di browser 360px, 412px, dan 1280px lulus. Job `ci` dan `mysql` terakhir di GitHub lulus pada `403df3f`; Task 4 masih lokal.
+Verifikasi Task 5: build produksi dan `composer ci:check` lulus lokal (Pest 189 lulus, 2 tes konkurensi khusus MySQL dilewati di SQLite, Vitest 56 lulus). Alur isi form, periksa, dan ubah lulus di browser 360px, 412px, dan 1280px. Database uji tetap tanpa pengajuan, nomor, atau audit baru. Job `ci` dan `mysql` terakhir di GitHub lulus pada `403df3f`. Task 4–5 masih lokal.
 
-## Hal yang perlu diketahui sebelum Task 5
+## Hal yang perlu diketahui sebelum Task 6
 
 - **Layout halaman:** `resources/js/app.tsx` tidak memilih layout. Setiap halaman menyatakan sendiri: `Page.layout = [PublicLayout, { title: '…' }]`. Test `resources/js/pages/page-layouts.test.ts` memastikan ini.
-- **Bundle publik:** komponen yang dipakai form publik memakai `clsx`, bukan `cn()` dari `@/lib/utils`, supaya `tailwind-merge` tidak ikut termuat. JS awal `/` sekarang 109,8 KB gzip; batas bawahnya React 19 + Inertia 3. Penentu akhir: Lighthouse mobile Performance ≥ 85 di Task 8.
-- **Komponen publik** ada di `resources/js/components/public/`. Typeahead dan TimePicker siap dipasang di form pada Task 5. Gunakan `timeOptions()` dengan `anchor={serverTime}` untuk jam mulai dan selesai, serta `breakOptions()` dengan nilai awal `0` untuk istirahat. TimePicker membulatkan jam acuan ke bawah per 15 menit dan hanya mengisi nilai setelah pengguna memilih.
+- **Bundle publik:** komponen yang dipakai form publik memakai `clsx`, bukan `cn()` dari `@/lib/utils`, supaya `tailwind-merge` tidak ikut termuat. JS awal `/` setelah integrasi form sekitar 144,6 KB gzip berdasarkan lima aset JS yang dimuat di browser. Ukur Lighthouse mobile Performance ≥ 85 di Task 8.
+- **Form publik** memakai `PublicOvertimeRequest` untuk periksa dan menerima ringkasan lewat flash Inertia. Tombol “Kirim lembur” masih nonaktif. Pada Task 6, kirim tanggal absolut dari ringkasan bersama `date_choice` dan validasi ulang di server. Gunakan named limiter tersendiri untuk kirim agar tidak berbagi kuota dengan periksa atau lookup.
 - **Gaya form publik** (DESIGN.md §4): label 15px/600, nilai input 17px, kontrol 52px, baris pilihan ≥ 48px, border `line-control`, invalid `border-danger bg-danger-soft`, error 14px `text-danger`. Shadow melayang memakai `shadow-[var(--shadow-float)]`.
 - **Mock Inertia untuk test** (`resources/js/test/inertia-mock.tsx`) harus punya `router.on`, karena `PanelLayout` merender `Toaster`.
 - **Endpoint publik:** `GET /api/departments/{department}/employees` → `[{id, nik, name}]`, throttle 60/menit per IP. Proxy tepercaya diatur lewat `TRUSTED_PROXIES` (`App\Http\Middleware\TrustProxies`).

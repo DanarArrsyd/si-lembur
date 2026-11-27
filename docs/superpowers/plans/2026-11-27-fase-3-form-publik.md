@@ -126,16 +126,16 @@ tests/Feature/Public/*Test.php, resources/js/**/*.test.tsx
 ### Task 5: Form publik + layar Periksa lagi
 
 **Interfaces — Produces:**
-- `GET /` → `public/form` dengan props `departments: {id, name}[]`, `dateChoices: {value: 'TODAY'|'YESTERDAY', label: string}[]` (label "Hari ini (20 Nov 2026)"), `serverTime: "HH:MM"` (anchor picker), `maxGrossMinutes`.
+- `GET /` → `public/form` dengan props `departments: {id, name}[]`, `dateChoices: {value: 'TODAY'|'YESTERDAY', date: string, label: string}[]` (label "Hari ini (20 Nov 2026)"), `serverTime: "HH:MM"` (anchor picker), `maxGrossMinutes`.
 - `PublicOvertimeRequest`: `department_id` int wajib, `employee_id` int wajib, `date_choice` in `DateChoice`, `start_time`/`end_time` `H:i` wajib, `break_minutes` int 0–240, `description` string wajib, `website` (honeypot) harus kosong. Pesan Indonesia (mis. "Pilih departemen.", "Pilih nama dari daftar.").
 - `OvertimeWorkflow::previewPublic(OvertimeInput, CarbonImmutable $now): array{date: string, start_at: string, end_at: string, break_minutes: int, total_minutes: int, day_type: string, exceeds_daily_limit: bool, exceeds_weekly_limit: bool, employee: {name, nik}, department: string}` — semua validasi `submitPublic` tanpa menyimpan dan tanpa nomor.
 - `OvertimeLimitChecker::preview(int $employeeId, CarbonImmutable $date, CarbonImmutable $startAt, int $minutes, DayType $dayType, ?int $ignoreId = null): array{daily: bool, weekly: bool}`.
-- `POST /lembur/periksa` (throttle `10,1`) → redirect back dengan `Inertia::flash('review', …)`; error → field errors.
+- `POST /lembur/periksa` (named limiter 10/menit per IP) → redirect 303 ke form dengan `Inertia::flash('review', …)`; error → field errors.
 - Form: urutan field PRD §4.1; total real-time di kartu `primary-soft` (mono 28px + "2 jam 30 menit"); "Lanjut periksa" sticky. Layar periksa: ringkasan + info netral lewat batas (teks BUSINESS_RULES §4; versi mingguan: "Total lembur minggu ini melebihi 18 jam. Pengajuan tetap dikirim dan akan diperiksa supervisor.") + tombol "Kirim lembur" (primary) & "Ubah" (secondary).
 
-- [ ] Test Feature: props form benar pada 11:59 (2 pilihan) dan 12:00 (1 pilihan); periksa 09/11 23:00–02:00 istirahat 30 → review 150 menit, tanggal 09/11; periksa tidak menyimpan apa pun; periksa dengan R6/R7/R8 → error field; honeypot → 422; 11× periksa → 429; info lewat batas harian muncul.
-- [ ] Test Vitest: total real-time "2 jam 30 menit (2,5 jam)" untuk 23:00–02:00/30; R2 tampil di bawah Jam selesai tanpa request; ringkasan error muncul bila > 1 error; Review Focus 1 (error `overtime_date` dari server ditampilkan di field Tanggal).
-- [ ] Implement → PASS → commit.
+- [x] Test Feature: props form benar pada 11:59 (2 pilihan) dan 12:00 (1 pilihan); periksa 09/11 23:00–02:00 istirahat 30 → review 150 menit, tanggal 09/11; periksa tidak menyimpan apa pun; periksa dengan R6/R7/R8 → error field; honeypot → 422; 11× periksa → 429; info lewat batas harian muncul.
+- [x] Test Vitest: total real-time "2 jam 30 menit (2,5 jam)" untuk 23:00–02:00/30; R2 tampil di bawah Jam selesai tanpa request; ringkasan error muncul bila > 1 error; Review Focus 1 (error `overtime_date` dari server ditampilkan di field Tanggal).
+- [x] Implement → PASS → commit `09ae983`.
 
 ### Task 6: Kirim + halaman sukses
 
