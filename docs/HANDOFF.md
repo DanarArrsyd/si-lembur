@@ -4,7 +4,7 @@ Untuk agent AI mana pun (Claude Code, Codex, Cursor, dll.) yang melanjutkan peke
 
 **Perbarui file ini di akhir setiap task** (status, commit, langkah berikutnya). Bila isi file ini berbeda dengan checkbox di rencana fase atau `docs/ROADMAP.md`, yang benar adalah checkbox + `git log`.
 
-Terakhir diperbarui: 2026-11-27, setelah Fase 3 Task 6.
+Terakhir diperbarui: 2026-11-27, setelah Fase 3 Task 7.
 
 ## Posisi sekarang
 
@@ -12,7 +12,7 @@ Terakhir diperbarui: 2026-11-27, setelah Fase 3 Task 6.
 |---|---|
 | 1 Fondasi | Selesai |
 | 2 Logika inti | Selesai |
-| 3 Form publik + cek status | **Berjalan**: Task 0–6 selesai, **berikutnya Task 7** |
+| 3 Form publik + cek status | **Berjalan**: Task 0–7 selesai, **berikutnya Task 8** |
 | 4–7 | Belum mulai |
 
 Rencana aktif: `docs/superpowers/plans/2026-11-27-fase-3-form-publik.md`. Sudah disetujui pemilik proyek pada 2026-11-27, termasuk 8 keputusan di bagian "Keputusan". Jangan menanyakan ulang keputusan itu.
@@ -28,23 +28,23 @@ Rencana aktif: `docs/superpowers/plans/2026-11-27-fase-3-form-publik.md`. Sudah 
 | 4 | TimePicker + BottomSheet | Selesai | `d232af5` |
 | 5 | Form publik + layar "Periksa lagi" | Selesai | `09ae983` |
 | 6 | Kirim + halaman sukses | Selesai | `335145c` |
-| 7 | Halaman cek status | **Berikutnya** | – |
-| 8 | Verifikasi (360px/412px, Lighthouse), laporan fase | Belum | – |
+| 7 | Halaman cek status | Selesai | `d1cabe9` |
+| 8 | Verifikasi (360px/412px, Lighthouse), laporan fase | **Berikutnya** | – |
 
-Verifikasi Task 6: build produksi dan `composer ci:check` lulus lokal (Pest 195 lulus, 2 tes konkurensi khusus MySQL dilewati di SQLite, Vitest 60 lulus). Di browser 360px, 412px, dan 1280px, klik ganda mengirim satu POST, pengajuan tampil dengan nomor dan status Menunggu, dan tombol Back serta “Isi lembur lagi” membuka form kosong. Database uji mencatat tiga pengajuan dan tiga audit. Job `ci` dan `mysql` terakhir di GitHub lulus pada `403df3f`. Task 4–6 masih lokal.
+Verifikasi Task 7: build produksi dan `composer ci:check` lulus lokal (Pest 201 lulus, 2 tes konkurensi khusus MySQL dilewati di SQLite, Vitest 68 lulus). Cek status lulus uji browser di 360px, 412px, dan 1280px, termasuk pencarian nama lewat keyboard, pergantian departemen, dan arahan ajukan ulang. Alur dari halaman sukses langsung mengisi nama dan memuat riwayat. Job `ci` dan `mysql` terakhir di GitHub lulus pada `403df3f`. Task 4–7 masih lokal.
 
-## Hal yang perlu diketahui sebelum Task 7
+## Hal yang perlu diketahui sebelum Task 8
 
 - **Layout halaman:** `resources/js/app.tsx` tidak memilih layout. Setiap halaman menyatakan sendiri: `Page.layout = [PublicLayout, { title: '…' }]`. Test `resources/js/pages/page-layouts.test.ts` memastikan ini.
 - **Bundle publik:** komponen yang dipakai form publik memakai `clsx`, bukan `cn()` dari `@/lib/utils`, supaya `tailwind-merge` tidak ikut termuat. JS awal `/` pada pengukuran Task 5 sekitar 144,6 KB gzip berdasarkan lima aset JS yang dimuat di browser. Ukur Lighthouse mobile Performance ≥ 85 di Task 8.
-- **Kirim lembur** memakai payload yang sudah diperiksa, termasuk tanggal absolut, dengan validasi ulang di server. Halaman sukses memakai signed URL 24 jam. Tautan “Cek status” menargetkan `/status?department={id}&employee={id}` dari halaman sukses dan `/status` dari halaman tautan tidak berlaku. Task 7 menyediakan halaman tersebut, dapat memakai `StatusPill` yang sudah ada, dan perlu memakai limiter tersendiri untuk status.
+- **Cek status** aktif dari header dan halaman sukses. `/api/status` memakai limiter tersendiri 60/menit per IP dan hanya mengirim riwayat karyawan aktif, tanpa kegiatan lembur. Tautan dari halaman sukses memilih departemen karyawan saat ini. Ringkasan di halaman sukses tetap menunjukkan departemen saat lembur dicatat.
 - **Gaya form publik** (DESIGN.md §4): label 15px/600, nilai input 17px, kontrol 52px, baris pilihan ≥ 48px, border `line-control`, invalid `border-danger bg-danger-soft`, error 14px `text-danger`. Shadow melayang memakai `shadow-[var(--shadow-float)]`.
 - **Mock Inertia untuk test** (`resources/js/test/inertia-mock.tsx`) harus punya `router.on`, karena `PanelLayout` merender `Toaster`.
 - **Endpoint publik:** `GET /api/departments/{department}/employees` → `[{id, nik, name}]`, throttle 60/menit per IP. Proxy tepercaya diatur lewat `TRUSTED_PROXIES` (`App\Http\Middleware\TrustProxies`).
 
 ## Menunggu jawaban / persetujuan
 
-- **Teks UI baru** yang belum disetujui pemilik proyek (masukkan ke laporan akhir Fase 3): "Ketik nama, lalu pilih dari daftar.", "Pilih departemen dulu.", "Memuat daftar nama…", "NIK {nik}", "Tautan pengajuan tidak berlaku", "Buka Cek status untuk melihat pengajuan lembur.".
+- **Teks UI baru** yang belum disetujui pemilik proyek (masukkan ke laporan akhir Fase 3): "Ketik nama, lalu pilih dari daftar.", "Pilih departemen dulu.", "Memuat daftar nama…", "NIK {nik}", "Tautan pengajuan tidak berlaku", "Buka Cek status untuk melihat pengajuan lembur.", "Isi lembur" (tautan kembali dari Cek status), "Pengajuan 60 hari terakhir", "Memuat status pengajuan…", "Status pengajuan gagal dimuat.", dan "Muat ulang status".
 - **Pertanyaan ke HRD** (belum dijawab): hari istirahat mingguan (Minggu saja atau Sabtu dan Minggu), file template Excel export, file data karyawan untuk import.
 - **Temuan untuk Fase 4–6** ada di bagian "Dicatat untuk fase berikutnya" pada rencana Fase 3. Angkat di awal fase terkait.
 

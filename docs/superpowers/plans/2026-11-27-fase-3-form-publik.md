@@ -151,18 +151,18 @@ tests/Feature/Public/*Test.php, resources/js/**/*.test.tsx
 ### Task 7: Cek status
 
 **Interfaces — Produces:**
-- `GET /status` → `public/status` (props `departments`, query `department`/`employee` opsional untuk prefill).
-- `GET /api/status?employee_id=` (throttle `60,1`) → pengajuan karyawan aktif dengan `overtime_date` ≥ hari ini − 60 hari, urut terbaru: `number, date, start, end, total_minutes, status, status_label, reject_reason, can_resubmit`. Tanpa `description`. `can_resubmit` = status DITOLAK dan `overtime_date` ada di `OvertimeDateRule::publicChoices($now)` (Keputusan 7).
-- Tampilan: daftar kartu (tanggal, jam, total mono, StatusPill, alasan tolak bila ada, arahan ajukan ulang untuk DITOLAK). Kosong: "Belum ada pengajuan dalam 60 hari terakhir." `StatusPill` dibuat di sini (DESIGN.md §6) dan dipakai ulang di panel.
+- `GET /status` → `public/status` (props `departments`, query `department`/`employee` opsional untuk prefill pasangan departemen dan karyawan aktif).
+- `GET /api/status?employee_id=` (named limiter 60/menit per IP) → pengajuan karyawan aktif dengan `overtime_date` ≥ hari ini − 60 hari, urut terbaru: `number, date, start, end, total_minutes, status, status_label, reject_reason, can_resubmit`. Tanpa `description`. `can_resubmit` = status DITOLAK dan `overtime_date` ada di `OvertimeDateRule::publicChoices($now)` (Keputusan 7).
+- Tampilan: daftar kartu (tanggal, jam, total mono, StatusPill, alasan tolak bila ada, arahan ajukan ulang untuk DITOLAK). Kosong: "Belum ada pengajuan dalam 60 hari terakhir." Pakai `StatusPill` dari Task 6 (DESIGN.md §6).
 
-- [ ] Test Feature: batas 60 hari (hari ke-60 masuk, ke-61 tidak); hanya karyawan itu; field `description` tidak ada; alasan tolak ada; 61× → 429.
-- [ ] Test Feature `can_resubmit`: ditolak untuk lembur hari ini → true; lembur kemarin pada 11:59 → true, pada 12:00 → false; lembur 3 hari lalu → false; status selain DITOLAK → false.
-- [ ] Test Vitest: StatusPill selalu berisi kata; prefill dari query.
-- [ ] Implement → PASS → commit.
+- [x] Test Feature: batas 60 hari (hari ke-60 masuk, ke-61 tidak); hanya karyawan itu; field `description` tidak ada; alasan tolak ada; 61× → 429.
+- [x] Test Feature `can_resubmit`: ditolak untuk lembur hari ini → true; lembur kemarin pada 11:59 → true, pada 12:00 → false; lembur 3 hari lalu → false; status selain DITOLAK → false.
+- [x] Test Vitest: StatusPill selalu berisi kata; prefill dari query.
+- [x] Implement → PASS → commit `d1cabe9`.
 
 ### Task 8: Verifikasi & laporan
 
-- [ ] Header publik: aktifkan tautan "Cek status pengajuan" (sekarang halamannya ada).
+- [x] Header publik: tautan "Cek status pengajuan" diaktifkan bersama Task 7.
 - [ ] `composer ci:check`, suite MySQL.
 - [ ] Uji manual di browser 360px dan 412px: isi form sampai sukses < 1 menit, tanpa scroll horizontal/zoom, keyboard-only, cek status.
 - [ ] Lighthouse mobile `/` dan `/status` (build produksi): Accessibility ≥ 95, Performance ≥ 85; kontras AA.
