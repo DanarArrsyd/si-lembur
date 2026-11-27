@@ -73,12 +73,14 @@ Tiga tes dashboard lulus di SQLite dan MySQL 8. Supervisor diuji di browser 360 
 
 ### Task 3 — Antrean, setujui, dan tolak
 
-- [ ] Buat `tests/Feature/Panel/ApprovalTest.php`. Uji daftar berisi Menunggu pada departemen yang benar, setiap aksi lintas departemen mendapat 403, alasan kosong atau lebih dari 500 karakter ditolak, dan bulk dengan satu ID luar scope atau status berubah tidak mengubah pengajuan mana pun. Uji audit satu baris per pengajuan yang disetujui.
-- [ ] Jalankan tes sampai gagal pada rute yang belum ada.
-- [ ] Tambah rute antrean dan aksi. `ApproveOvertimesRequest` menerima `ids` unik, integer positif, minimal satu dan maksimal 25. Workflow tetap membaca dan mengunci tiap ID serta memeriksa Policy dan status sebelum menyimpan. `OvertimeReasonRequest` memvalidasi `reason` yang telah dipangkas, dengan panjang 5–500. Tegakkan batas yang sama pada `OvertimeWorkflow::validReason()`.
-- [ ] Teruskan satu `CarbonImmutable` per aksi saat memanggil `approve`, `approveMany`, dan `reject`. Pertahankan pemanggilan existing dengan parameter terakhir `?CarbonImmutable $now = null` dan fallback jam server di workflow. Konfirmasi tanggal audit dan waktu persetujuan konsisten.
-- [ ] Tampilkan tabel dan kartu yang memuat label “Lewat batas harian” dan “Lewat batas mingguan” sesuai flag. Kotak pilih-semua hanya berlaku di halaman aktif. Uji pilihan massal dan dialog alasan di `resources/js/test/panel-approvals.test.tsx`. Tambahkan tautan Edit di dialog setelah rute Task 5 tersedia.
-- [ ] Jalankan tes antrean, workflow, dan `composer ci:check`. Commit `feat(panel): process overtime approvals`.
+- [x] Buat `tests/Feature/Panel/ApprovalTest.php`. Uji daftar berisi Menunggu pada departemen yang benar, setiap aksi lintas departemen mendapat 403, alasan kosong atau lebih dari 500 karakter ditolak, dan bulk dengan satu ID luar scope atau status berubah tidak mengubah pengajuan mana pun. Uji audit satu baris per pengajuan yang disetujui.
+- [x] Jalankan tes sampai gagal pada rute yang belum ada.
+- [x] Tambah rute antrean dan aksi. `ApproveOvertimesRequest` menerima `ids` unik, integer positif, minimal satu dan maksimal 25. Workflow tetap membaca dan mengunci tiap ID serta memeriksa Policy dan status sebelum menyimpan. `OvertimeReasonRequest` memvalidasi `reason` yang telah dipangkas, dengan panjang 5–500. Tegakkan batas yang sama pada `OvertimeWorkflow::validReason()`.
+- [x] Teruskan satu `CarbonImmutable` per aksi saat memanggil `approve`, `approveMany`, dan `reject`. Pertahankan pemanggilan existing dengan parameter terakhir `?CarbonImmutable $now = null` dan fallback jam server di workflow. Konfirmasi tanggal audit dan waktu persetujuan konsisten.
+- [x] Tampilkan tabel dan kartu yang memuat label “Lewat batas harian” dan “Lewat batas mingguan” sesuai flag. Kotak pilih-semua hanya berlaku di halaman aktif. Uji pilihan massal dan dialog alasan di `resources/js/test/panel-approvals.test.tsx`. Tambahkan tautan Edit di dialog setelah rute Task 5 tersedia.
+- [x] Jalankan tes antrean, workflow, dan `composer ci:check`. Commit `dc548e7`.
+
+Build produksi dan `composer ci:check` lulus. Sebanyak 55 tes antrean dan workflow lulus di MySQL 8. Uji browser 360 px dan 1280 px lulus. Tes regresi memastikan pesan status tetap tampil ketika halaman yang diminta sudah kosong. Tautan Edit dijadwalkan pada Task 5.
 
 ### Task 4 — Riwayat dan batalkan persetujuan
 
