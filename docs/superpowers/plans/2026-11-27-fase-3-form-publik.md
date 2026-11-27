@@ -21,22 +21,20 @@
 - Tanpa `dangerouslySetInnerHTML`, tanpa `any`.
 - Lighthouse mobile form publik: Accessibility ≥ 95, Performance ≥ 85.
 
-## Keputusan yang perlu disetujui
+## Keputusan (disetujui pemilik proyek 2026-11-27)
 
 1. **Picker jam = bottom sheet** (bukan `<select>` native). Alasan: PRD minta "saat dibuka langsung scroll ke jam terdekat". `<select>` native di Android selalu membuka dari pilihan terpilih/atas; supaya bisa mulai dari jam sekarang kita harus mengisi jam default yang mungkin salah dan lolos tanpa dicek karyawan. Bottom sheet: daftar 96 jam (baris 52px, mono), terbuka di jam server terdekat tanpa mengisi apa pun. Dipakai juga untuk Istirahat (0–4 jam).
 2. **"Periksa lagi" divalidasi server.** Tombol "Lanjut periksa" → `POST /lembur/periksa` (semua aturan R1–R8 + info lewat batas, tanpa menyimpan) → layar ringkasan. "Kirim lembur" → `POST /lembur` (validasi ulang + simpan). Info lewat batas harian/mingguan tampil di layar periksa (butuh total lembur lain hari itu/minggu itu yang hanya ada di server). Total jam di form tetap real-time dari `lib/overtime.ts`.
-3. **Privasi Cek status — pilih salah satu.** Tanpa login, siapa pun bisa membuka riwayat lembur rekan kerja (jam, total, status, alasan tolak). Kegiatan tidak pernah ditampilkan.
-   - **(a) Sesuai PRD apa adanya:** pilih departemen → nama → daftar tampil. Paling cepat untuk karyawan.
-   - **(b) Tambah pengecek ringan:** setelah memilih nama, karyawan mengetik 4 digit terakhir NIK. Salah → "NIK tidak cocok." Throttle tetap 60/menit per IP. Ini tambahan di luar PRD §4.2, jadi hanya dibuat bila disetujui. NIK di daftar typeahead tetap tampil, jadi ini bukan pengaman kuat, hanya mencegah orang iseng.
-   - Rekomendasi: **(a)** bila HRD tidak keberatan, karena data yang tampil tidak sensitif dan yang bisa membuka hanya orang yang tahu link-nya. Pilih (b) bila HRD keberatan.
+3. **Privasi Cek status.** Tanpa login, siapa pun bisa membuka riwayat lembur rekan kerja (jam, total, status, alasan tolak). Kegiatan tidak pernah ditampilkan.
+   Dipilih opsi (a), sesuai PRD apa adanya: pilih departemen → nama → daftar tampil. Opsi (b), mengetik 4 digit terakhir NIK, tidak dibuat.
 4. **Link halaman sukses berlaku 24 jam** (signed URL). Sesudah itu 403 dengan arahan ke Cek status.
 5. **Proxy tepercaya lewat `.env`:** `TRUSTED_PROXIES` (default kosong = tidak percaya header `X-Forwarded-For`). Isi bila Hostinger/Cloudflare dipakai di depan aplikasi, supaya throttle per IP memakai IP HP, bukan IP proxy. Perlu dicek saat deploy (Fase 7).
 6. **Honeypot terisi** → 422 dengan pesan umum "Pengajuan tidak bisa diproses. Muat ulang halaman lalu coba lagi." (tanpa menyimpan, dicatat di log aplikasi).
 7. **Arahan setelah ditolak di Cek status.** PRD bilang karyawan boleh mengajukan ulang, tapi form publik hanya menerima "Hari ini" dan "Kemarin" (sebelum jam batas). Pengajuan yang ditolak 2 hari setelah lembur tidak bisa diajukan ulang oleh karyawan. Kartu DITOLAK di Cek status menampilkan arahan yang dihitung server:
    - tanggal lembur masih ada di pilihan form saat ini → "Ajukan ulang lewat form lembur." + tautan ke `/`;
    - selain itu → "Hubungi supervisor untuk mengajukan ulang lembur ini."
-   Teks ini tambahan copy di luar PRD; mohon disetujui atau diganti.
-8. **Pesan yang belum disetujui dari Fase 2** ikut dipakai di form publik: "Pilih tanggal lembur." (tanggal kosong). Mohon disetujui atau diganti. Pesan "masih menunggu persetujuan" (`InvalidOvertimeTransition`) baru tampil di panel Fase 4.
+   Teks ini tambahan copy di luar PRD, disetujui bersama rencana ini.
+8. **Pesan yang belum disetujui dari Fase 2** ikut dipakai di form publik: "Pilih tanggal lembur." (tanggal kosong), disetujui bersama rencana ini. Pesan "masih menunggu persetujuan" (`InvalidOvertimeTransition`) baru tampil di panel Fase 4.
 
 ## Pertanyaan ke HRD yang sebaiknya dikirim sekarang
 
@@ -149,12 +147,10 @@ tests/Feature/Public/*Test.php, resources/js/**/*.test.tsx
 **Interfaces — Produces:**
 - `GET /status` → `public/status` (props `departments`, query `department`/`employee` opsional untuk prefill).
 - `GET /api/status?employee_id=` (throttle `60,1`) → pengajuan karyawan aktif dengan `overtime_date` ≥ hari ini − 60 hari, urut terbaru: `number, date, start, end, total_minutes, status, status_label, reject_reason, can_resubmit`. Tanpa `description`. `can_resubmit` = status DITOLAK dan `overtime_date` ada di `OvertimeDateRule::publicChoices($now)` (Keputusan 7).
-- Bila Keputusan 3 = (b): `employee_id` + `nik_last4` wajib; tidak cocok → 422 "NIK tidak cocok."
 - Tampilan: daftar kartu (tanggal, jam, total mono, StatusPill, alasan tolak bila ada, arahan ajukan ulang untuk DITOLAK). Kosong: "Belum ada pengajuan dalam 60 hari terakhir." `StatusPill` dibuat di sini (DESIGN.md §6) dan dipakai ulang di panel.
 
 - [ ] Test Feature: batas 60 hari (hari ke-60 masuk, ke-61 tidak); hanya karyawan itu; field `description` tidak ada; alasan tolak ada; 61× → 429.
 - [ ] Test Feature `can_resubmit`: ditolak untuk lembur hari ini → true; lembur kemarin pada 11:59 → true, pada 12:00 → false; lembur 3 hari lalu → false; status selain DITOLAK → false.
-- [ ] Bila (b): NIK benar → daftar; NIK salah → 422 tanpa data.
 - [ ] Test Vitest: StatusPill selalu berisi kata; prefill dari query.
 - [ ] Implement → PASS → commit.
 
