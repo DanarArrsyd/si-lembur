@@ -77,10 +77,10 @@ tests/Feature/Public/*Test.php, resources/js/**/*.test.tsx
 
 **Files:** `docs/ARCHITECTURE.md`, `.github/workflows/tests.yml`.
 
-- [ ] `docs/ARCHITECTURE.md` §4: tambah tabel `overtime_number_counters (date PK, last_number)` beserta alasannya (penghitung nomor per hari, dikunci di transaksi yang sama). Keputusan ini sudah disetujui di Fase 2.
-- [ ] `docs/ARCHITECTURE.md` §2: sesuaikan struktur `tests/` dengan yang dipakai (`tests/Feature/Services`, `tests/Feature/Workflow`, `tests/Concurrency`).
-- [ ] CI: tambah job dengan service `mysql:8` yang menjalankan seluruh suite termasuk `tests/Concurrency`, supaya uji race generator nomor dan submit ganda tidak hanya jalan di laptop. Job SQLite yang ada tetap.
-- [ ] CI hijau. Commit `docs: sync architecture with phase 2` dan `ci: run test suite on mysql 8`.
+- [x] `docs/ARCHITECTURE.md` §4: tambah tabel `overtime_number_counters (date PK, last_number)` beserta alasannya (penghitung nomor per hari, dikunci di transaksi yang sama). Keputusan ini sudah disetujui di Fase 2.
+- [x] `docs/ARCHITECTURE.md` §2: sesuaikan struktur `tests/` dengan yang dipakai (`tests/Feature/Services`, `tests/Feature/Workflow`, `tests/Concurrency`).
+- [x] CI: tambah job dengan service `mysql:8` yang menjalankan seluruh suite termasuk `tests/Concurrency`, supaya uji race generator nomor dan submit ganda tidak hanya jalan di laptop. Job SQLite yang ada tetap.
+- [x] CI hijau. Commit `docs: sync architecture with phase 2` dan `ci: run test suite on mysql 8`.
 
 ### Task 1: Pisah bundle publik dari panel
 
