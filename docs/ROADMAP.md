@@ -35,13 +35,14 @@ Fase N — selesai
 - [x] `lib/overtime.ts` mirror kalkulator + test Vitest dengan kasus yang sama
 
 ## Fase 3 — Form publik + cek status
-- [ ] Endpoint lookup karyawan (field terbatas, throttle)
-- [ ] Komponen `Typeahead` (fuse.js, ARIA combobox), `TimePicker`, `BottomSheet`
-- [ ] Form + preview total real-time + info lewat batas
-- [ ] Layar "Periksa lagi" → submit → halaman sukses (signed URL) → reset form
-- [ ] Halaman cek status 60 hari
-- [ ] Throttle, honeypot, pesan error sesuai `BUSINESS_RULES.md` §2.1
-- [ ] Uji manual di viewport 360px & 412px; Lighthouse mobile
+- [x] Endpoint lookup karyawan (field terbatas, throttle)
+- [x] Komponen `Typeahead` (fuse.js, ARIA combobox), `TimePicker`, `BottomSheet`
+- [x] Form + preview total real-time + info lewat batas
+- [x] Layar "Periksa lagi" → submit → halaman sukses (signed URL) → reset form
+- [x] Halaman cek status 60 hari melalui tautan pribadi
+- [x] Throttle, honeypot, pesan error sesuai `BUSINESS_RULES.md` §2.1
+- [x] Uji browser di viewport 360px & 412px dan Lighthouse mobile
+- Target internal bundle awal masih terbuka. Form memakai 146,8 kB gzip dari target 90 kB. [Hasil verifikasi Fase 3](superpowers/plans/2026-11-27-fase-3-form-publik.md#task-8-verifikasi--laporan).
 
 ## Fase 4 — Area supervisor
 - [ ] Login + throttle + akun nonaktif ditolak

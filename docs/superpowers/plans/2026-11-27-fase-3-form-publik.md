@@ -136,7 +136,10 @@ tests/Feature/Public/*Test.php, resources/js/**/*.test.tsx
 ### Task 8: Verifikasi & laporan
 
 - [x] Header publik: tautan "Cek status pengajuan" aktif sejak Task 7.
-- [ ] `composer ci:check`, suite MySQL.
-- [ ] Uji manual di browser 360px dan 412px: isi form sampai sukses < 1 menit, tanpa scroll horizontal/zoom, keyboard-only, cek status.
-- [ ] Lighthouse mobile `/` dan `/status` (build produksi): Accessibility ≥ 95, Performance ≥ 85; kontras AA.
-- [ ] `caveman-review`, `caveman-stats`, centang ROADMAP, push, CI hijau, laporan.
+- [x] Build produksi dan `composer ci:check` lulus. Vitest 48 lulus. Pest lulus 196, 2 tes konkurensi dilewati pada SQLite. MySQL 8 menjalankan 198 tes, semuanya lulus.
+- [x] Uji browser dengan data sintetis di viewport 360 px dan 412 px. Alur sentuh dari mulai isi hingga bukti selesai sekitar 2 detik pada kedua ukuran. Uji keyboard dari form sampai riwayat juga lulus. Tidak ada scroll horizontal atau zoom otomatis selama uji. Durasi ini berasal dari otomasi browser. Waktu pengisian oleh karyawan belum diukur.
+- [x] Lighthouse 13.6.0 mobile dengan throttling simulasi dan build produksi lokal. Form, halaman bantuan status, dan riwayat pribadi masing-masing mendapat Performance 100 dan Accessibility 100. LCP masing-masing 0,6 detik. Pasangan warna teks dan kontrol yang digunakan memenuhi batas kontras AA yang diuji.
+- [x] Review diff dan catat hasil. Perbaiki pengembalian fokus dari pemilih jam agar fokus yang sudah berpindah ke kolom berikutnya dipertahankan. Tes regresi dan alur browser lulus.
+- [ ] CI GitHub pada branch Fase 3. Workflow saat ini berjalan pada pull request atau push ke `main`.
+
+Ukuran awal JavaScript form adalah 146.805 byte gzip, termasuk 111.068 byte dari entry React dan Inertia. Target internal 90 kB tetap terbuka. Pengukuran Lighthouse dilakukan secara lokal dan memenuhi target Performance dan Accessibility dalam PRD.
