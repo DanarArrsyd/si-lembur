@@ -4,7 +4,7 @@ Untuk agent AI mana pun (Claude Code, Codex, Cursor, dll.) yang melanjutkan peke
 
 **Perbarui file ini di akhir setiap task** (status, commit, langkah berikutnya). Bila isi file ini berbeda dengan checkbox di rencana fase atau `docs/ROADMAP.md`, yang benar adalah checkbox + `git log`.
 
-Terakhir diperbarui: 2026-11-27, setelah Fase 3 Task 8.
+Terakhir diperbarui: 2026-11-27, setelah Fase 4 Task 1.
 
 ## Posisi sekarang
 
@@ -13,10 +13,10 @@ Terakhir diperbarui: 2026-11-27, setelah Fase 3 Task 8.
 | 1 Fondasi | Selesai |
 | 2 Logika inti | Selesai |
 | 3 Form publik + cek status | Selesai |
-| 4 Area supervisor | Menunggu konfirmasi untuk memulai rencana fase |
+| 4 Area supervisor | Berjalan. Task 1 selesai, berikutnya Task 2. |
 | 5–7 | Belum mulai |
 
-Rencana Fase 3: `docs/superpowers/plans/2026-11-27-fase-3-form-publik.md`. Disetujui pemilik proyek pada 2026-11-27, termasuk delapan keputusan di bagian "Keputusan". Rencana Fase 4 belum disusun.
+Rencana Fase 3: `docs/superpowers/plans/2026-11-27-fase-3-form-publik.md`. Disetujui pemilik proyek pada 2026-11-27, termasuk delapan keputusan di bagian "Keputusan". Rencana Fase 4 disetujui pada 2026-11-27 dan tersedia di `docs/superpowers/plans/2026-11-27-fase-4-area-supervisor.md`.
 
 ### Fase 3, per task
 
@@ -34,7 +34,20 @@ Rencana Fase 3: `docs/superpowers/plans/2026-11-27-fase-3-form-publik.md`. Diset
 
 Verifikasi Task 8: build produksi dan `composer ci:check` lulus lokal. Pest lulus 203 tes di MySQL 8.0.46 (termasuk 2 tes konkurensi) dan 201 di SQLite (2 dilewati). Vitest lulus 68 tes. Alur pengisian sampai sukses lalu cek status lulus di Chromium 360px dan 412px dengan emulasi sentuh dan hanya keyboard. Tidak ada scroll horizontal atau zoom otomatis. Lighthouse mobile (Performance/Accessibility): `/` 98/100, `/status` 100/100, status dengan riwayat 98/100. [CI GitHub pada commit kode Fase 3](https://github.com/DanarArrsyd/si-lembur/actions/runs/46030508425) lulus di job `ci` dan `mysql`.
 
-## Hal yang perlu diketahui sebelum Fase 4
+## Fase 4, per task
+
+| Task | Isi | Status | Commit |
+|---|---|---|---|
+| 1 | Login dan audit | Selesai | `2c4e78c` |
+| 2 | Dashboard dan scope pembacaan | Berikutnya | – |
+| 3 | Antrean, setujui, dan tolak | Belum | – |
+| 4 | Riwayat dan batalkan persetujuan | Belum | – |
+| 5 | Input atas nama dan edit | Belum | – |
+| 6 | Verifikasi dan penutupan | Belum | – |
+
+Verifikasi Task 1: build produksi dan `composer ci:check` lulus lokal. Pest 206 lulus dan dua tes konkurensi dilewati di SQLite. Vitest 68 lulus. Browser 360 dan 1280 px menampilkan pemberitahuan pada sesi yang berakhir setelah penonaktifan. Login aktif berhasil, login ulang untuk akun nonaktif ditolak, dan data audit uji mencatat satu keberhasilan serta dua kegagalan.
+
+## Hal yang perlu diketahui sebelum Fase 4 Task 2
 
 - **Layout halaman:** `resources/js/app.tsx` tidak memilih layout. Setiap halaman menyatakan sendiri: `Page.layout = [PublicLayout, { title: '…' }]`. Test `resources/js/pages/page-layouts.test.ts` memastikan ini.
 - **Bundle publik:** komponen yang dipakai form publik memakai `clsx`, bukan `cn()` dari `@/lib/utils`, supaya `tailwind-merge` tidak ikut termuat. JS awal pada pengukuran akhir sekitar 147,0 KB gzip di `/` dan 126,9 KB di `/status`. Anggaran awal 90 KB untuk form belum tercapai. Kedua halaman memenuhi ambang Lighthouse mobile.
