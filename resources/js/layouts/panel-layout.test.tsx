@@ -49,12 +49,18 @@ describe('PanelLayout', () => {
         render(<PanelLayout title="Dashboard">x</PanelLayout>);
 
         const links = sidebar().getAllByRole('link');
-        expect(links.map((a) => a.textContent)).toEqual(['Dashboard']);
+        expect(links.map((a) => a.textContent)).toEqual([
+            'Dashboard',
+            'Persetujuan',
+        ]);
         expect(links[0]).toHaveAttribute('aria-current', 'page');
 
-        const approvals = sidebar().getByText('Persetujuan').closest('li');
-        expect(approvals).toHaveAttribute('aria-disabled', 'true');
-        expect(approvals).toHaveTextContent('Segera');
+        expect(
+            sidebar().getByRole('link', { name: 'Persetujuan' }),
+        ).toHaveAttribute('href', '/panel/approvals');
+        const history = sidebar().getByText('Riwayat lembur').closest('li');
+        expect(history).toHaveAttribute('aria-disabled', 'true');
+        expect(history).toHaveTextContent('Segera');
     });
 
     it('renders the page title, user and logout in the top bar', () => {

@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Panel\ApprovalController;
 use App\Http\Controllers\Panel\DashboardController;
 use App\Http\Controllers\Public\EmployeeLookupController;
 use App\Http\Controllers\Public\OvertimeFormController;
@@ -31,6 +32,12 @@ Route::get('/api/departments/{department}/employees', EmployeeLookupController::
 
 Route::middleware(['auth', 'role:ADMIN,SUPERVISOR'])->prefix('panel')->name('panel.')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::prefix('approvals')->name('approvals.')->group(function () {
+        Route::get('/', [ApprovalController::class, 'index'])->name('index');
+        Route::post('/bulk-approve', [ApprovalController::class, 'bulkApprove'])->name('bulk-approve');
+        Route::post('/{overtime}/approve', [ApprovalController::class, 'approve'])->can('approve', 'overtime')->name('approve');
+        Route::post('/{overtime}/reject', [ApprovalController::class, 'reject'])->can('reject', 'overtime')->name('reject');
+    });
 });
 
 require __DIR__.'/auth.php';

@@ -28,7 +28,12 @@ const admin: UserRole[] = ['ADMIN'];
 // Urutan & isi mengikuti PRD.md §5.
 export const navItems: NavItem[] = [
     { label: 'Dashboard', icon: LayoutDashboard, roles: both, href: '/panel' },
-    { label: 'Persetujuan', icon: ClipboardCheck, roles: both },
+    {
+        label: 'Persetujuan',
+        icon: ClipboardCheck,
+        roles: both,
+        href: '/panel/approvals',
+    },
     { label: 'Riwayat lembur', icon: History, roles: both },
     { label: 'Input atas nama', icon: UserPen, roles: both },
     { label: 'Export Excel', icon: FileSpreadsheet, roles: both },

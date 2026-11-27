@@ -27,3 +27,12 @@ export type DashboardProps = {
     recentPending: PanelOvertimeRow[];
     approvalsUrl: string | null;
 };
+
+export type ApprovalQueue = {
+    data: PanelOvertimeRow[];
+    current_page: number;
+    last_page: number;
+    next_page_url: string | null;
+    prev_page_url: string | null;
+    total: number;
+};

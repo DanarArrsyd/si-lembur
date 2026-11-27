@@ -183,11 +183,16 @@ class OvertimeWorkflow
     /**
      * @throws AuthorizationException
      */
-    public function approve(User $actor, Overtime $overtime): Overtime
+    public function approve(User $actor, Overtime $overtime, ?CarbonImmutable $now = null): Overtime
     {
         Gate::forUser($actor)->authorize('approve', $overtime);
 
-        return DB::transaction(fn () => $this->doApprove($actor, $this->lockOvertime($overtime, OvertimeStatus::PENDING)), self::ATTEMPTS);
+        $now ??= CarbonImmutable::now();
+
+        return DB::transaction(
+            fn () => $this->doApprove($actor, $this->lockOvertime($overtime, OvertimeStatus::PENDING), $now),
+            self::ATTEMPTS,
+        );
     }
 
     /**
@@ -198,9 +203,11 @@ class OvertimeWorkflow
      *
      * @throws AuthorizationException
      */
-    public function approveMany(User $actor, array $ids): Collection
+    public function approveMany(User $actor, array $ids, ?CarbonImmutable $now = null): Collection
     {
-        return DB::transaction(function () use ($actor, $ids) {
+        $now ??= CarbonImmutable::now();
+
+        return DB::transaction(function () use ($actor, $ids, $now) {
             $ids = array_values(array_unique($ids));
             $overtimes = Overtime::query()->whereKey($ids)->orderBy('id')->lockForUpdate()->get();
 
@@ -210,13 +217,15 @@ class OvertimeWorkflow
 
             foreach ($overtimes as $overtime) {
                 Gate::forUser($actor)->authorize('approve', $overtime);
+            }
 
+            foreach ($overtimes as $overtime) {
                 if ($overtime->status !== OvertimeStatus::PENDING) {
                     throw new InvalidOvertimeTransition($overtime->status);
                 }
             }
 
-            return $overtimes->map(fn (Overtime $overtime) => $this->doApprove($actor, $overtime));
+            return $overtimes->map(fn (Overtime $overtime) => $this->doApprove($actor, $overtime, $now));
         }, self::ATTEMPTS);
     }
 
@@ -224,26 +233,27 @@ class OvertimeWorkflow
      * @throws AuthorizationException
      * @throws ValidationException
      */
-    public function reject(User $actor, Overtime $overtime, string $reason): Overtime
+    public function reject(User $actor, Overtime $overtime, string $reason, ?CarbonImmutable $now = null): Overtime
     {
         Gate::forUser($actor)->authorize('reject', $overtime);
         $reason = $this->validReason($reason);
+        $now ??= CarbonImmutable::now();
 
-        return DB::transaction(function () use ($actor, $overtime, $reason) {
+        return DB::transaction(function () use ($actor, $overtime, $reason, $now) {
             $overtime = $this->lockOvertime($overtime, OvertimeStatus::PENDING);
             $before = $this->snapshot($overtime);
 
             $overtime->fill([
                 'status' => OvertimeStatus::REJECTED,
                 'rejected_by' => $actor->id,
-                'rejected_at' => CarbonImmutable::now(),
+                'rejected_at' => $now,
                 'reject_reason' => $reason,
             ])->save();
 
             // Pengajuan ditolak keluar dari hitungan batas; penanda pengajuan lain ikut berubah (H5).
             $this->limits->recalculateWeek($overtime->employee_id, $overtime->overtime_date->toImmutable());
 
-            $this->audit->log('overtime.rejected', $overtime, $before, $this->snapshot($overtime), $reason, $actor);
+            $this->audit->log('overtime.rejected', $overtime, $before, $this->snapshot($overtime), $reason, $actor, $now);
 
             return $overtime;
         }, self::ATTEMPTS);
@@ -340,17 +350,17 @@ class OvertimeWorkflow
         return $overtime->refresh();
     }
 
-    private function doApprove(User $actor, Overtime $overtime): Overtime
+    private function doApprove(User $actor, Overtime $overtime, CarbonImmutable $now): Overtime
     {
         $before = $this->snapshot($overtime);
 
         $overtime->fill([
             'status' => OvertimeStatus::APPROVED,
             'approved_by' => $actor->id,
-            'approved_at' => CarbonImmutable::now(),
+            'approved_at' => $now,
         ])->save();
 
-        $this->audit->log('overtime.approved', $overtime, $before, $this->snapshot($overtime), user: $actor);
+        $this->audit->log('overtime.approved', $overtime, $before, $this->snapshot($overtime), user: $actor, now: $now);
 
         return $overtime;
     }
@@ -463,7 +473,11 @@ class OvertimeWorkflow
             throw ValidationException::withMessages(['reason' => 'Tulis alasan minimal 5 huruf.']);
         }
 
-        return Str::limit($reason, 500, '');
+        if (mb_strlen($reason) > 500) {
+            throw ValidationException::withMessages(['reason' => 'Alasan maksimal 500 karakter.']);
+        }
+
+        return $reason;
     }
 
     /**

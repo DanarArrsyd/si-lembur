@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\Models\AuditLog;
 use App\Models\User;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
@@ -25,11 +26,12 @@ class AuditLogger
         ?array $after = null,
         ?string $reason = null,
         ?User $user = null,
+        ?CarbonImmutable $now = null,
     ): AuditLog {
         $request = request();
         $userAgent = $request->userAgent();
 
-        return AuditLog::query()->create([
+        $audit = new AuditLog([
             'user_id' => $user?->id,
             'action' => $action,
             'auditable_type' => $auditable?->getMorphClass(),
@@ -40,5 +42,13 @@ class AuditLogger
             'ip' => $request->ip(),
             'user_agent' => $userAgent === null ? null : Str::limit($userAgent, 500, ''),
         ]);
+
+        if ($now !== null) {
+            $audit->setCreatedAt($now);
+        }
+
+        $audit->save();
+
+        return $audit;
     }
 }
