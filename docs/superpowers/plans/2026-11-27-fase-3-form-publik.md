@@ -25,10 +25,26 @@
 
 1. **Picker jam = bottom sheet** (bukan `<select>` native). Alasan: PRD minta "saat dibuka langsung scroll ke jam terdekat". `<select>` native di Android selalu membuka dari pilihan terpilih/atas; supaya bisa mulai dari jam sekarang kita harus mengisi jam default yang mungkin salah dan lolos tanpa dicek karyawan. Bottom sheet: daftar 96 jam (baris 52px, mono), terbuka di jam server terdekat tanpa mengisi apa pun. Dipakai juga untuk Istirahat (0–4 jam).
 2. **"Periksa lagi" divalidasi server.** Tombol "Lanjut periksa" → `POST /lembur/periksa` (semua aturan R1–R8 + info lewat batas, tanpa menyimpan) → layar ringkasan. "Kirim lembur" → `POST /lembur` (validasi ulang + simpan). Info lewat batas harian/mingguan tampil di layar periksa (butuh total lembur lain hari itu/minggu itu yang hanya ada di server). Total jam di form tetap real-time dari `lib/overtime.ts`.
-3. **Cek status bisa melihat pengajuan siapa pun** di departemen terpilih (sesuai PRD: tanpa login, pilih departemen → nama). Yang tampil hanya tanggal, jam, total, status, alasan tolak; kegiatan tidak ditampilkan. Mohon konfirmasi ini memang diterima.
+3. **Privasi Cek status — pilih salah satu.** Tanpa login, siapa pun bisa membuka riwayat lembur rekan kerja (jam, total, status, alasan tolak). Kegiatan tidak pernah ditampilkan.
+   - **(a) Sesuai PRD apa adanya:** pilih departemen → nama → daftar tampil. Paling cepat untuk karyawan.
+   - **(b) Tambah pengecek ringan:** setelah memilih nama, karyawan mengetik 4 digit terakhir NIK. Salah → "NIK tidak cocok." Throttle tetap 60/menit per IP. Ini tambahan di luar PRD §4.2, jadi hanya dibuat bila disetujui. NIK di daftar typeahead tetap tampil, jadi ini bukan pengaman kuat, hanya mencegah orang iseng.
+   - Rekomendasi: **(a)** bila HRD tidak keberatan, karena data yang tampil tidak sensitif dan yang bisa membuka hanya orang yang tahu link-nya. Pilih (b) bila HRD keberatan.
 4. **Link halaman sukses berlaku 24 jam** (signed URL). Sesudah itu 403 dengan arahan ke Cek status.
 5. **Proxy tepercaya lewat `.env`:** `TRUSTED_PROXIES` (default kosong = tidak percaya header `X-Forwarded-For`). Isi bila Hostinger/Cloudflare dipakai di depan aplikasi, supaya throttle per IP memakai IP HP, bukan IP proxy. Perlu dicek saat deploy (Fase 7).
 6. **Honeypot terisi** → 422 dengan pesan umum "Pengajuan tidak bisa diproses. Muat ulang halaman lalu coba lagi." (tanpa menyimpan, dicatat di log aplikasi).
+7. **Arahan setelah ditolak di Cek status.** PRD bilang karyawan boleh mengajukan ulang, tapi form publik hanya menerima "Hari ini" dan "Kemarin" (sebelum jam batas). Pengajuan yang ditolak 2 hari setelah lembur tidak bisa diajukan ulang oleh karyawan. Kartu DITOLAK di Cek status menampilkan arahan yang dihitung server:
+   - tanggal lembur masih ada di pilihan form saat ini → "Ajukan ulang lewat form lembur." + tautan ke `/`;
+   - selain itu → "Hubungi supervisor untuk mengajukan ulang lembur ini."
+   Teks ini tambahan copy di luar PRD; mohon disetujui atau diganti.
+8. **Pesan yang belum disetujui dari Fase 2** ikut dipakai di form publik: "Pilih tanggal lembur." (tanggal kosong). Mohon disetujui atau diganti. Pesan "masih menunggu persetujuan" (`InvalidOvertimeTransition`) baru tampil di panel Fase 4.
+
+## Pertanyaan ke HRD yang sebaiknya dikirim sekarang
+
+Belum memblok Fase 3, tapi jawabannya menentukan data sejak hari pertama dipakai. Lebih murah diketahui sebelum UI panel dibangun.
+
+1. **Hari istirahat mingguan:** Minggu saja, atau Sabtu dan Minggu? Menentukan jenis hari (`HARI_LIBUR`) dan peringatan batas 4/18 jam. Sekarang default Minggu.
+2. **File template Excel export** (Fase 6). Bila template butuh kolom yang belum ada (mis. shift, uang makan), skema berubah.
+3. **File data karyawan** untuk import awal (Fase 5).
 
 ## Review Focus
 
@@ -37,6 +53,7 @@
 3. **Dua karyawan bernama sama** → keduanya tampil dengan NIK, yang terkirim `employee_id` yang dipilih. Test di Task 3.
 4. **Tombol Kirim ditekan dua kali / jaringan lambat** → tombol nonaktif bertuliskan "Mengirim…", hanya satu request. Test di Task 6 (server juga sudah aman dari Fase 2).
 5. **Tombol Back setelah sukses** → kembali ke form kosong, tidak mengirim ulang (pola redirect setelah POST). Test di Task 6.
+6. **Pengajuan ditolak lalu dicek** → arahan ajukan ulang sesuai jam server (Keputusan 7). Test di Task 7.
 
 ---
 
@@ -57,6 +74,15 @@ tests/Feature/Public/*Test.php, resources/js/**/*.test.tsx
 ```
 
 ---
+
+### Task 0: Rapikan dokumen + MySQL di CI
+
+**Files:** `docs/ARCHITECTURE.md`, `.github/workflows/tests.yml`.
+
+- [ ] `docs/ARCHITECTURE.md` §4: tambah tabel `overtime_number_counters (date PK, last_number)` beserta alasannya (penghitung nomor per hari, dikunci di transaksi yang sama). Keputusan ini sudah disetujui di Fase 2.
+- [ ] `docs/ARCHITECTURE.md` §2: sesuaikan struktur `tests/` dengan yang dipakai (`tests/Feature/Services`, `tests/Feature/Workflow`, `tests/Concurrency`).
+- [ ] CI: tambah job dengan service `mysql:8` yang menjalankan seluruh suite termasuk `tests/Concurrency`, supaya uji race generator nomor dan submit ganda tidak hanya jalan di laptop. Job SQLite yang ada tetap.
+- [ ] CI hijau. Commit `docs: sync architecture with phase 2` dan `ci: run test suite on mysql 8`.
 
 ### Task 1: Pisah bundle publik dari panel
 
@@ -122,10 +148,13 @@ tests/Feature/Public/*Test.php, resources/js/**/*.test.tsx
 
 **Interfaces — Produces:**
 - `GET /status` → `public/status` (props `departments`, query `department`/`employee` opsional untuk prefill).
-- `GET /api/status?employee_id=` (throttle `60,1`) → pengajuan karyawan aktif dengan `overtime_date` ≥ hari ini − 60 hari, urut terbaru: `number, date, start, end, total_minutes, status, status_label, reject_reason`. Tanpa `description`.
-- Tampilan: daftar kartu (tanggal, jam, total mono, StatusPill, alasan tolak bila ada). Kosong: "Belum ada pengajuan dalam 60 hari terakhir." `StatusPill` dibuat di sini (DESIGN.md §6) dan dipakai ulang di panel.
+- `GET /api/status?employee_id=` (throttle `60,1`) → pengajuan karyawan aktif dengan `overtime_date` ≥ hari ini − 60 hari, urut terbaru: `number, date, start, end, total_minutes, status, status_label, reject_reason, can_resubmit`. Tanpa `description`. `can_resubmit` = status DITOLAK dan `overtime_date` ada di `OvertimeDateRule::publicChoices($now)` (Keputusan 7).
+- Bila Keputusan 3 = (b): `employee_id` + `nik_last4` wajib; tidak cocok → 422 "NIK tidak cocok."
+- Tampilan: daftar kartu (tanggal, jam, total mono, StatusPill, alasan tolak bila ada, arahan ajukan ulang untuk DITOLAK). Kosong: "Belum ada pengajuan dalam 60 hari terakhir." `StatusPill` dibuat di sini (DESIGN.md §6) dan dipakai ulang di panel.
 
 - [ ] Test Feature: batas 60 hari (hari ke-60 masuk, ke-61 tidak); hanya karyawan itu; field `description` tidak ada; alasan tolak ada; 61× → 429.
+- [ ] Test Feature `can_resubmit`: ditolak untuk lembur hari ini → true; lembur kemarin pada 11:59 → true, pada 12:00 → false; lembur 3 hari lalu → false; status selain DITOLAK → false.
+- [ ] Bila (b): NIK benar → daftar; NIK salah → 422 tanpa data.
 - [ ] Test Vitest: StatusPill selalu berisi kata; prefill dari query.
 - [ ] Implement → PASS → commit.
 
@@ -136,3 +165,24 @@ tests/Feature/Public/*Test.php, resources/js/**/*.test.tsx
 - [ ] Uji manual di browser 360px dan 412px: isi form sampai sukses < 1 menit, tanpa scroll horizontal/zoom, keyboard-only, cek status.
 - [ ] Lighthouse mobile `/` dan `/status` (build produksi): Accessibility ≥ 95, Performance ≥ 85; kontras AA.
 - [ ] `caveman-review`, `caveman-stats`, centang ROADMAP, push, CI hijau, laporan.
+
+---
+
+## Dicatat untuk fase berikutnya (tidak dikerjakan di Fase 3)
+
+Temuan review 2026-11-27. Masuk ke rencana fase terkait; yang butuh keputusan ditanyakan di awal fase itu.
+
+**Fase 4 — Area supervisor**
+- **Edit setelah batalkan persetujuan bisa buntu.** `OvertimeWorkflow::update()` memvalidasi tanggal dengan aturan panel (bulan ini + bulan lalu), sedangkan `cancelApproval()` tidak punya batas waktu. Pengajuan 2 bulan lalu yang dibatalkan tidak bisa diedit. Keputusan: (a) batasi batalkan persetujuan ke jendela yang sama, atau (b) saat edit, izinkan tanggal lama bila tanggalnya tidak diubah. Rekomendasi (a), karena koreksi di luar 2 bulan juga mengubah data yang sudah dibayar.
+- **Arahan Edit vs Tolak.** Di dialog Tolak, tampilkan petunjuk: bila hanya salah jam/kegiatan, pakai Edit, karena karyawan mungkin tidak bisa mengajukan ulang (Keputusan 7).
+- Alasan tolak/batalkan > 500 huruf ditolak dengan pesan, bukan dipotong diam-diam oleh `validReason()`.
+- `approve`, `approveMany`, `reject`, `cancelApproval` menerima `CarbonImmutable $now` seperti `submitPublic`, supaya waktu persetujuan bisa dites dengan `setTestNow` secara konsisten.
+- Akun nonaktif yang sedang login ditolak dengan pesan (follow-up Fase 2).
+- Usulan (butuh persetujuan): daftar persetujuan menampilkan sumber "Dikirim dari form publik" + jam kirim, membantu supervisor mengenali pengajuan atas nama orang lain.
+
+**Fase 5 — Area admin**
+- Mengubah hari istirahat mingguan harus memanggil `recalculateDayTypes()` dengan **semua** tanggal pengajuan MENUNGGU, bukan satu tanggal. Tambah test khusus.
+- Validasi `HH:MM` di halaman Pengaturan (follow-up Fase 2).
+
+**Fase 6 — Export**
+- Belum ada kunci periode. Usulan minimal: saat membatalkan persetujuan di bulan yang sudah diekspor (cek audit log `export`), tampilkan peringatan "Data bulan ini sudah diekspor pada {tanggal}. Perubahan tidak masuk file yang sudah dikirim." Tidak memblok.
