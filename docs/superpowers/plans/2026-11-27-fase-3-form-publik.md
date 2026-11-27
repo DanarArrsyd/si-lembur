@@ -108,8 +108,10 @@ tests/Feature/Public/*Test.php, resources/js/**/*.test.tsx
 - `searchEmployees(list: Employee[], query: string): Employee[]` di `lib/employee-search.ts` — tidak peka huruf besar, cocok di awal kata mana pun, toleran typo 1–2 huruf (fuse.js, `threshold` ditentukan oleh test), maks 8 hasil.
 - `<Typeahead departmentId employees value onChange error />` — pola ARIA 1.2 combobox (`role="combobox"`, `aria-expanded`, `aria-controls`, `aria-activedescendant`, listbox `role="option"`), panah atas/bawah, Enter memilih, Escape menutup. Hasil: Nama (body-strong) + NIK (mono, ink-muted). Kosong: "Nama tidak ditemukan. Pastikan departemen sudah benar." Wajib memilih dari daftar (teks bebas tidak dianggap pilihan).
 
-- [ ] Test Vitest: "budi", "santo", "santosoo" menemukan Budi Santoso (PRD §8 #4); "BUDI" juga; dua "Agus Setiawan" tampil dengan NIK berbeda dan pilihan mengirim id yang benar; keyboard ↓↓Enter memilih item kedua; ganti departemen → nilai dikosongkan; empty state.
-- [ ] Implement → PASS → commit.
+- [x] Test Vitest: "budi", "santo", "santosoo" menemukan Budi Santoso (PRD §8 #4); "BUDI" juga; dua "Agus Setiawan" tampil dengan NIK berbeda dan pilihan mengirim id yang benar; keyboard ↓↓Enter memilih item kedua; ganti departemen → nilai dikosongkan; empty state.
+- [x] Implement → PASS → commit.
+- Hasil: kata ≥ 3 huruf memakai fuse.js (`fuse.js/basic`, ~7 KB gzip) yang dijangkar di awal kata (`location 0`, `distance 2`, `threshold 0.34`); kata 1–2 huruf hanya cocok persis di awal kata. Hasil persis selalu di atas hasil salah ketik. Typeahead belum dipasang di halaman; dicek di browser 360px pada Task 5.
+- Copy baru (perlu persetujuan, dilaporkan di akhir fase): helper "Ketik nama, lalu pilih dari daftar.", "Pilih departemen dulu.", "Memuat daftar nama…", dan "NIK {nik}" setelah nama dipilih.
 
 ### Task 4: TimePicker + BottomSheet
 
