@@ -140,12 +140,13 @@ tests/Feature/Public/*Test.php, resources/js/**/*.test.tsx
 ### Task 6: Kirim + halaman sukses
 
 **Interfaces — Produces:**
-- `POST /lembur` (throttle `10,1`) → `submitPublic` → redirect 303 ke `URL::temporarySignedRoute('public.success', now()->addDay(), ['number' => …])`.
+- `POST /lembur` (named limiter 10/menit per IP) → `submitPublic` → redirect 303 ke `URL::temporarySignedRoute('public.success', now()->addDay(), ['number' => …])`.
 - `GET /lembur/sukses/{number}` (middleware `signed`) → `public/success`: nomor (mono), ringkasan, StatusPill "Menunggu", teks "Lembur terkirim. Menunggu persetujuan supervisor.", tombol "Isi lembur lagi" (ke `/`, form kosong) dan "Cek status" (ke `/status?department=…&employee=…`).
 
-- [ ] Test Feature: kirim → 1 baris PENDING + redirect ke URL bertanda tangan; URL tanpa tanda tangan → 403; nomor tidak ada → 404; kirim dengan data ditolak tidak menyimpan.
-- [ ] Test Vitest: tombol Kirim nonaktif + "Mengirim…" selama proses (Review Focus 4).
-- [ ] Implement → PASS → commit.
+- [x] Test Feature: kirim → 1 baris PENDING + redirect ke URL bertanda tangan; URL tanpa tanda tangan → 403; nomor tidak ada → 404; kedaluwarsa setelah 24 jam → 403 dengan arahan ke Cek status; kirim dengan data ditolak tidak menyimpan.
+- [x] Test Vitest: tombol Kirim nonaktif + "Mengirim…" selama proses (Review Focus 4).
+- [x] Uji browser 360px, 412px dan 1280px. Klik ganda mengirim satu POST. Back dan “Isi lembur lagi” membuka form kosong.
+- [x] Implement → PASS → commit `335145c`.
 
 ### Task 7: Cek status
 
