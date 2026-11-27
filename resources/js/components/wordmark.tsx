@@ -1,4 +1,7 @@
-import { cn } from '@/lib/utils';
+import { clsx } from 'clsx';
+
+// clsx, bukan clsx(): wordmark ikut dimuat form publik, dan tailwind-merge (~9 KB gzip)
+// tidak perlu karena kelas di sini tidak saling menimpa.
 
 type Variant = 'public' | 'sidebar' | 'login';
 
@@ -34,8 +37,8 @@ export function Wordmark({
     const style = styles[variant];
 
     return (
-        <div className={cn('flex flex-col gap-0.5', className)}>
-            <span className={cn('font-bold tracking-[0.02em]', style.mark)}>
+        <div className={clsx('flex flex-col gap-0.5', className)}>
+            <span className={clsx('font-bold tracking-[0.02em]', style.mark)}>
                 SI-LEMBUR
             </span>
             <span className={style.subtitle}>{style.text}</span>

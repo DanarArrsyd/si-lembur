@@ -1,4 +1,6 @@
 // Placeholder Fase 1. Form input lembur dibangun di Fase 3.
+import PublicLayout from '@/layouts/public-layout';
+
 export default function OvertimeForm() {
     return (
         <section className="rounded-md border border-line bg-surface p-4">
@@ -11,4 +13,4 @@ export default function OvertimeForm() {
     );
 }
 
-OvertimeForm.layout = { title: 'Input lembur' };
+OvertimeForm.layout = [PublicLayout, { title: 'Input lembur' }];

@@ -1,4 +1,6 @@
 // Placeholder Fase 1. KPI dan daftar pengajuan menunggu dibangun di Fase 4.
+import PanelLayout from '@/layouts/panel-layout';
+
 export default function Dashboard() {
     return (
         <section className="max-w-2xl rounded-md border border-line bg-surface p-5">
@@ -11,4 +13,4 @@ export default function Dashboard() {
     );
 }
 
-Dashboard.layout = { title: 'Dashboard' };
+Dashboard.layout = [PanelLayout, { title: 'Dashboard' }];

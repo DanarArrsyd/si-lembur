@@ -39,7 +39,8 @@ export function inertiaMock() {
                     {children}
                 </a>
             ),
-        router: { flushAll: vi.fn() },
+        // on(): dipakai Toaster (useFlashToast) di PanelLayout; mengembalikan fungsi unsubscribe.
+        router: { flushAll: vi.fn(), on: vi.fn(() => () => {}) },
     };
 }
 

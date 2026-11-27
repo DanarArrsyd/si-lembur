@@ -86,9 +86,11 @@ tests/Feature/Public/*Test.php, resources/js/**/*.test.tsx
 
 **Files:** `resources/js/app.tsx`, `layouts/*`, `pages/**`.
 
-- [ ] Ganti resolver layout global menjadi layout per halaman (`Page.layout = (page) => <PublicLayout>…`). Pindahkan `Toaster` + `TooltipProvider` ke `PanelLayout`.
-- [ ] Ukur: chunk yang dimuat `GET /` (gzip). Target ≤ 90 KB gzip total JS awal untuk form publik. Catat angka sebelum (147 KB `app.js`) dan sesudah di laporan.
-- [ ] Test yang ada tetap lulus. Commit `perf(ui): split public bundle from panel`.
+- [x] Ganti resolver layout global menjadi layout per halaman (`Page.layout = (page) => <PublicLayout>…`). Pindahkan `Toaster` + `TooltipProvider` ke `PanelLayout`.
+- [x] Ukur: chunk yang dimuat `GET /` (gzip). Target ≤ 90 KB gzip total JS awal untuk form publik. Catat angka sebelum (147 KB `app.js`) dan sesudah di laporan.
+- [x] Test yang ada tetap lulus. Commit `perf(ui): split public bundle from panel`.
+- Hasil: JS awal `GET /` 147,2 → **109,8 KB gzip**. Target 90 KB tidak tercapai: `app.js` 108 KB adalah React 19 + Inertia 3 (react-dom, @inertiajs/core + es-toolkit, laravel-precognition), batas bawah stack terkunci. Penentu akhir tetap Lighthouse Performance ≥ 85 di Task 8.
+- Aturan untuk komponen publik berikutnya: pakai `clsx`, bukan `cn()`, supaya tailwind-merge (~9 KB gzip) tidak ikut bundle publik.
 
 ### Task 2: Endpoint daftar karyawan + proxy tepercaya
 
