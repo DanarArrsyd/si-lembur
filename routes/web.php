@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Panel\DashboardController;
 use App\Http\Controllers\Public\EmployeeLookupController;
 use App\Http\Controllers\Public\OvertimeFormController;
 use App\Http\Controllers\Public\StatusCheckController;
@@ -29,7 +30,7 @@ Route::get('/api/departments/{department}/employees', EmployeeLookupController::
     ->name('public.employees');
 
 Route::middleware(['auth', 'role:ADMIN,SUPERVISOR'])->prefix('panel')->name('panel.')->group(function () {
-    Route::inertia('/', 'panel/dashboard')->name('dashboard');
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 });
 
 require __DIR__.'/auth.php';
