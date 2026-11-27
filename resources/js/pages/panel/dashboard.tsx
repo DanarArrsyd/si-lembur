@@ -1,3 +1,6 @@
+import type { ReactNode } from 'react';
+import PanelLayout from '@/layouts/panel-layout';
+
 // Placeholder Fase 1. KPI dan daftar pengajuan menunggu dibangun di Fase 4.
 export default function Dashboard() {
     return (
@@ -11,4 +14,6 @@ export default function Dashboard() {
     );
 }
 
-Dashboard.layout = { title: 'Dashboard' };
+Dashboard.layout = (page: ReactNode) => (
+    <PanelLayout title="Dashboard">{page}</PanelLayout>
+);

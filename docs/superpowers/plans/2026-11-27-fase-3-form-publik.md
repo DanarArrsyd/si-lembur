@@ -62,9 +62,10 @@ tests/Feature/Public/*Test.php, resources/js/**/*.test.tsx
 
 **Files:** `resources/js/app.tsx`, `layouts/*`, `pages/**`.
 
-- [ ] Ganti resolver layout global menjadi layout per halaman (`Page.layout = (page) => <PublicLayout>…`). Pindahkan `Toaster` + `TooltipProvider` ke `PanelLayout`.
-- [ ] Ukur: chunk yang dimuat `GET /` (gzip). Target ≤ 90 KB gzip total JS awal untuk form publik. Catat angka sebelum (147 KB `app.js`) dan sesudah di laporan.
-- [ ] Test yang ada tetap lulus. Commit `perf(ui): split public bundle from panel`.
+- [x] Ganti resolver layout global menjadi layout per halaman (`Page.layout = (page) => <PublicLayout>…`). Pindahkan `Toaster` dan `TooltipProvider` ke `PanelLayout`.
+- [x] Ukur JavaScript awal yang dimuat `GET /`. Jumlah ukuran gzip untuk ketiga chunk turun dari 151.085 menjadi 112.449 byte (25,6%). Browser mengonfirmasi chunk login dan panel hanya dimuat saat halamannya dibuka. Wordmark memakai kelas statis sehingga halaman publik tidak perlu memuat `tailwind-merge`.
+- [ ] Capai target ≤ 90 kB gzip JavaScript awal. Chunk utama yang memuat React dan Inertia sendiri berukuran 110.862 byte gzip. Ukur kembali setelah form publik tersedia.
+- [x] Test yang ada tetap lulus. Commit `perf(ui): split public bundle from panel`.
 
 ### Task 2: Endpoint daftar karyawan + proxy tepercaya
 

@@ -9,6 +9,8 @@ import {
     SheetDescription,
     SheetTitle,
 } from '@/components/ui/sheet';
+import { Toaster } from '@/components/ui/sonner';
+import { TooltipProvider } from '@/components/ui/tooltip';
 
 type Props = {
     title: string;
@@ -29,38 +31,41 @@ export default function PanelLayout({ title, children }: Props) {
     }
 
     return (
-        <div className="min-h-svh bg-canvas">
-            <Head title={title} />
+        <TooltipProvider delayDuration={0}>
+            <div className="min-h-svh bg-canvas">
+                <Head title={title} />
 
-            <aside className="fixed inset-y-0 left-0 hidden w-[var(--sidebar-width)] lg:block">
-                <SidebarNav role={user.role} currentUrl={url} />
-            </aside>
+                <aside className="fixed inset-y-0 left-0 hidden w-[var(--sidebar-width)] lg:block">
+                    <SidebarNav role={user.role} currentUrl={url} />
+                </aside>
 
-            <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
-                <SheetContent
-                    side="left"
-                    className="w-[var(--sidebar-width)] max-w-[85vw] border-0 bg-sidebar p-0 text-sidebar-ink [&>button]:text-white"
-                >
-                    <SheetTitle className="sr-only">Menu</SheetTitle>
-                    <SheetDescription className="sr-only">
-                        Navigasi area panel
-                    </SheetDescription>
-                    <SidebarNav
-                        role={user.role}
-                        currentUrl={url}
-                        onNavigate={() => setMenuOpen(false)}
+                <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
+                    <SheetContent
+                        side="left"
+                        className="w-[var(--sidebar-width)] max-w-[85vw] border-0 bg-sidebar p-0 text-sidebar-ink [&>button]:text-white"
+                    >
+                        <SheetTitle className="sr-only">Menu</SheetTitle>
+                        <SheetDescription className="sr-only">
+                            Navigasi area panel
+                        </SheetDescription>
+                        <SidebarNav
+                            role={user.role}
+                            currentUrl={url}
+                            onNavigate={() => setMenuOpen(false)}
+                        />
+                    </SheetContent>
+                </Sheet>
+
+                <div className="lg:pl-[var(--sidebar-width)]">
+                    <TopBar
+                        title={title}
+                        user={user}
+                        onOpenMenu={() => setMenuOpen(true)}
                     />
-                </SheetContent>
-            </Sheet>
-
-            <div className="lg:pl-[var(--sidebar-width)]">
-                <TopBar
-                    title={title}
-                    user={user}
-                    onOpenMenu={() => setMenuOpen(true)}
-                />
-                <main className="p-4 lg:p-6">{children}</main>
+                    <main className="p-4 lg:p-6">{children}</main>
+                </div>
             </div>
-        </div>
+            <Toaster />
+        </TooltipProvider>
     );
 }

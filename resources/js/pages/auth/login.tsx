@@ -1,4 +1,5 @@
 import { Form, Head } from '@inertiajs/react';
+import type { ReactNode } from 'react';
 import InputError from '@/components/input-error';
 import PasswordInput from '@/components/password-input';
 import { Button } from '@/components/ui/button';
@@ -6,6 +7,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
+import AuthLayout from '@/layouts/auth-layout';
 import { store } from '@/routes/login';
 
 type Props = {
@@ -82,7 +84,11 @@ export default function Login({ status }: Props) {
     );
 }
 
-Login.layout = {
-    title: 'Masuk ke SI-LEMBUR',
-    description: 'Masukkan nama pengguna dan kata sandi.',
-};
+Login.layout = (page: ReactNode) => (
+    <AuthLayout
+        title="Masuk ke SI-LEMBUR"
+        description="Masukkan nama pengguna dan kata sandi."
+    >
+        {page}
+    </AuthLayout>
+);

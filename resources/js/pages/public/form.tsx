@@ -1,3 +1,6 @@
+import type { ReactNode } from 'react';
+import PublicLayout from '@/layouts/public-layout';
+
 // Placeholder Fase 1. Form input lembur dibangun di Fase 3.
 export default function OvertimeForm() {
     return (
@@ -11,4 +14,4 @@ export default function OvertimeForm() {
     );
 }
 
-OvertimeForm.layout = { title: 'Input lembur' };
+OvertimeForm.layout = (page: ReactNode) => <PublicLayout>{page}</PublicLayout>;

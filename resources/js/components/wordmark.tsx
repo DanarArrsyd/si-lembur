@@ -1,5 +1,3 @@
-import { cn } from '@/lib/utils';
-
 type Variant = 'public' | 'sidebar' | 'login';
 
 // Ukuran & warna sesuai DESIGN.md §8.1. Wordmark teks, bukan logo gambar.
@@ -24,18 +22,12 @@ const styles: Record<
     },
 };
 
-export function Wordmark({
-    variant,
-    className,
-}: {
-    variant: Variant;
-    className?: string;
-}) {
+export function Wordmark({ variant }: { variant: Variant }) {
     const style = styles[variant];
 
     return (
-        <div className={cn('flex flex-col gap-0.5', className)}>
-            <span className={cn('font-bold tracking-[0.02em]', style.mark)}>
+        <div className="flex flex-col gap-0.5">
+            <span className={`font-bold tracking-[0.02em] ${style.mark}`}>
                 SI-LEMBUR
             </span>
             <span className={style.subtitle}>{style.text}</span>

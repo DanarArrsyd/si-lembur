@@ -39,7 +39,7 @@ export function inertiaMock() {
                     {children}
                 </a>
             ),
-        router: { flushAll: vi.fn() },
+        router: { flushAll: vi.fn(), on: vi.fn(() => () => undefined) },
     };
 }
 
