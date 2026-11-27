@@ -32,7 +32,7 @@ class PublicOvertimeRequest extends FormRequest
             'department_id' => ['required', 'integer', 'min:1'],
             'employee_id' => ['required', 'integer', 'min:1'],
             'date_choice' => ['required', Rule::enum(DateChoice::class)],
-            'overtime_date' => ['nullable', 'date_format:Y-m-d'],
+            'overtime_date' => [$this->routeIs('public.overtime.submit') ? 'required' : 'nullable', 'date_format:Y-m-d'],
             'start_time' => ['required', 'date_format:H:i'],
             'end_time' => ['required', 'date_format:H:i'],
             'break_minutes' => ['required', 'integer', 'min:0', 'max:'.OvertimeCalculator::MAX_BREAK_MINUTES],

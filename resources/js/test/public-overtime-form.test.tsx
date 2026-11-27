@@ -158,12 +158,8 @@ it('places the server cutoff error under Tanggal and keeps other input', async (
     );
 });
 
-it('shows the server review and restores the draft when Ubah is selected', async () => {
-    const user = userEvent.setup();
-    render(<OvertimeForm {...props} />);
-    await completeForm(user);
-
-    post.mockImplementation(
+async function openReview(user: ReturnType<typeof userEvent.setup>) {
+    post.mockImplementationOnce(
         (
             _url,
             _data,
@@ -191,6 +187,14 @@ it('shows the server review and restores the draft when Ubah is selected', async
     );
 
     await user.click(screen.getByRole('button', { name: 'Lanjut periksa' }));
+}
+
+it('shows the server review and restores the draft when Ubah is selected', async () => {
+    const user = userEvent.setup();
+    render(<OvertimeForm {...props} />);
+    await completeForm(user);
+
+    await openReview(user);
     expect(
         screen.getByRole('heading', { name: 'Periksa lagi' }),
     ).toBeInTheDocument();
@@ -201,6 +205,60 @@ it('shows the server review and restores the draft when Ubah is selected', async
     expect(screen.getByRole('combobox', { name: 'Nama' })).toHaveValue(
         'Budi Santoso',
     );
+    expect(screen.getByLabelText('Kegiatan lembur')).toHaveValue(
+        'Menyelesaikan pesanan',
+    );
+});
+
+it('submits the reviewed date only once and disables actions while sending', async () => {
+    const user = userEvent.setup();
+    const { rerender } = render(<OvertimeForm {...props} />);
+    await completeForm(user);
+    await openReview(user);
+
+    rerender(<OvertimeForm {...props} dateChoices={[props.dateChoices[0]]} />);
+    await user.dblClick(screen.getByRole('button', { name: 'Kirim lembur' }));
+
+    expect(post).toHaveBeenCalledTimes(2);
+    expect(post).toHaveBeenLastCalledWith(
+        '/lembur',
+        expect.objectContaining({
+            date_choice: 'YESTERDAY',
+            overtime_date: '2026-11-09',
+            start_time: '23:00',
+            end_time: '02:00',
+        }),
+        expect.anything(),
+    );
+    expect(screen.getByRole('button', { name: 'Mengirim…' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Ubah' })).toBeDisabled();
+});
+
+it('returns to the draft with field errors when the final submit is rejected', async () => {
+    const user = userEvent.setup();
+    render(<OvertimeForm {...props} />);
+    await completeForm(user);
+    await openReview(user);
+
+    const message = 'Tanggal lembur sudah berubah. Pilih tanggal lagi.';
+    post.mockImplementationOnce(
+        (
+            _url,
+            _data,
+            options: {
+                onError: (errors: Record<string, string>) => void;
+                onFinish: () => void;
+            },
+        ) => {
+            options.onError({ overtime_date: message });
+            options.onFinish();
+        },
+    );
+    await user.click(screen.getByRole('button', { name: 'Kirim lembur' }));
+
+    expect(
+        screen.getByRole('group', { name: 'Tanggal lembur' }),
+    ).toHaveAccessibleDescription(message);
     expect(screen.getByLabelText('Kegiatan lembur')).toHaveValue(
         'Menyelesaikan pesanan',
     );

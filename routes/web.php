@@ -10,6 +10,12 @@ Route::get('/', [OvertimeFormController::class, 'show'])->name('home');
 Route::post('/lembur/periksa', [OvertimeFormController::class, 'preview'])
     ->middleware('throttle:public-overtime-preview')
     ->name('public.overtime.preview');
+Route::post('/lembur', [OvertimeFormController::class, 'submit'])
+    ->middleware('throttle:public-overtime-submit')
+    ->name('public.overtime.submit');
+Route::get('/lembur/sukses/{number}', [OvertimeFormController::class, 'success'])
+    ->middleware('signed')
+    ->name('public.success');
 
 // ARCHITECTURE.md §5: endpoint publik 60/menit per IP.
 Route::get('/api/departments/{department}/employees', EmployeeLookupController::class)

@@ -2,13 +2,15 @@ import { router } from '@inertiajs/react';
 import clsx from 'clsx';
 import { useEffect, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
-import { primaryButton, ReviewCard } from '@/components/public/review-card';
+import { primaryAction } from '@/components/public/action-styles';
+import { ReviewCard } from '@/components/public/review-card';
 import { TimePicker } from '@/components/public/time-picker';
 import { Typeahead } from '@/components/public/typeahead';
 import PublicLayout from '@/layouts/public-layout';
 import { calculateOvertime, formatDuration, formatHours } from '@/lib/overtime';
 import { breakOptions, timeOptions } from '@/lib/time-options';
 import type {
+    DateChoice,
     EmployeeOption,
     OvertimeReview,
     PublicOvertimeFormProps,
@@ -32,6 +34,18 @@ const fields = [
     'description',
 ] as const;
 type Field = (typeof fields)[number];
+
+type OvertimePayload = {
+    department_id: number;
+    employee_id: number;
+    date_choice: DateChoice['value'];
+    overtime_date: string;
+    start_time: string;
+    end_time: string;
+    break_minutes: number;
+    description: string;
+    website: string;
+};
 
 function controlState(error?: string) {
     return error
@@ -70,7 +84,11 @@ export default function OvertimeForm({
     const [description, setDescription] = useState('');
     const [website, setWebsite] = useState('');
     const [errors, setErrors] = useState<Partial<Record<Field, string>>>({});
-    const [review, setReview] = useState<OvertimeReview | null>(null);
+    const [review, setReview] = useState<{
+        summary: OvertimeReview;
+        payload: OvertimePayload;
+    } | null>(null);
+    const requestInFlight = useRef(false);
     const [processing, setProcessing] = useState(false);
     const [requestError, setRequestError] = useState('');
     const [lookup, setLookup] = useState<{
@@ -144,7 +162,7 @@ export default function OvertimeForm({
 
     function preview(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
-        if (processing) return;
+        if (requestInFlight.current) return;
         setRequestError('');
         const validation: Partial<Record<Field, string>> = {};
         if (!department) validation.department_id = 'Pilih departemen.';
@@ -170,26 +188,46 @@ export default function OvertimeForm({
         )
             return;
 
+        postOvertime('preview', {
+            department_id: department,
+            employee_id: employee.id,
+            date_choice: date.value,
+            overtime_date: date.date,
+            start_time: start,
+            end_time: end,
+            break_minutes: rest,
+            description,
+            website,
+        });
+    }
+
+    function postOvertime(
+        action: 'preview' | 'submit',
+        payload: OvertimePayload,
+    ) {
+        if (requestInFlight.current) return;
+        requestInFlight.current = true;
+        setRequestError('');
         setProcessing(true);
         router.post(
-            '/lembur/periksa',
+            action === 'preview' ? '/lembur/periksa' : '/lembur',
+            payload,
             {
-                department_id: department,
-                employee_id: employee.id,
-                date_choice: date.value,
-                overtime_date: date.date,
-                start_time: start,
-                end_time: end,
-                break_minutes: rest,
-                description,
-                website,
-            },
-            {
-                preserveScroll: 'errors',
+                preserveScroll: action === 'preview' ? 'errors' : false,
                 onFlash: (flash) => {
-                    if (flash.review) setReview(flash.review as OvertimeReview);
+                    if (action === 'preview' && flash.review) {
+                        const summary = flash.review as OvertimeReview;
+                        setReview({
+                            summary,
+                            payload: {
+                                ...payload,
+                                overtime_date: summary.date,
+                            },
+                        });
+                    }
                 },
                 onError: (serverErrors) => {
+                    setReview(null);
                     setErrors({
                         ...serverErrors,
                         overtime_date:
@@ -213,13 +251,28 @@ export default function OvertimeForm({
                     );
                     return false;
                 },
-                onFinish: () => setProcessing(false),
+                onFinish: () => {
+                    requestInFlight.current = false;
+                    setProcessing(false);
+                },
             },
         );
     }
 
-    if (review)
-        return <ReviewCard review={review} onEdit={() => setReview(null)} />;
+    if (review) {
+        return (
+            <ReviewCard
+                review={review.summary}
+                processing={processing}
+                requestError={requestError}
+                onSubmit={() => postOvertime('submit', review.payload)}
+                onEdit={() => {
+                    setRequestError('');
+                    setReview(null);
+                }}
+            />
+        );
+    }
 
     return (
         <form className="grid gap-4" onSubmit={preview} noValidate>
@@ -463,7 +516,7 @@ export default function OvertimeForm({
                 <button
                     type="submit"
                     disabled={processing}
-                    className={primaryButton}
+                    className={primaryAction}
                 >
                     {processing ? 'Memeriksa…' : 'Lanjut periksa'}
                 </button>

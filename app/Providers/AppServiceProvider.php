@@ -30,6 +30,7 @@ class AppServiceProvider extends ServiceProvider
 
         RateLimiter::for('public-employee-lookup', fn (Request $request) => Limit::perMinute(60)->by($request->ip() ?? ''));
         RateLimiter::for('public-overtime-preview', fn (Request $request) => Limit::perMinute(10)->by($request->ip() ?? ''));
+        RateLimiter::for('public-overtime-submit', fn (Request $request) => Limit::perMinute(10)->by($request->ip() ?? ''));
     }
 
     /**

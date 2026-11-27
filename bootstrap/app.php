@@ -9,6 +9,8 @@ use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets;
 use Illuminate\Http\Middleware\TrustProxies as BaseTrustProxies;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Exceptions\InvalidSignatureException;
+use Inertia\Inertia;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -30,6 +32,18 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        $exceptions->render(function (InvalidSignatureException $exception, Request $request) {
+            if (! $request->routeIs('public.success') || $request->expectsJson()) {
+                return null;
+            }
+
+            $response = Inertia::render('public/success-unavailable')->toResponse($request);
+            $response->headers->set('Cache-Control', 'private, no-store');
+            $response->headers->set('Referrer-Policy', 'no-referrer');
+
+            return $response->setStatusCode(403);
+        });
+
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
         );
