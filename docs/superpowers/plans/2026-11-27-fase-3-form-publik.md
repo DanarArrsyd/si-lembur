@@ -83,8 +83,8 @@ tests/Feature/Public/*Test.php, resources/js/**/*.test.tsx
 - `searchEmployees(list: Employee[], query: string): Employee[]` di `lib/employee-search.ts` — tidak peka huruf besar, cocok di awal kata mana pun, toleran typo 1–2 huruf (fuse.js, `threshold` ditentukan oleh test), maks 8 hasil.
 - `<Typeahead departmentId employees value onChange error />` — pola ARIA 1.2 combobox (`role="combobox"`, `aria-expanded`, `aria-controls`, `aria-activedescendant`, listbox `role="option"`), panah atas/bawah, Enter memilih, Escape menutup. Hasil: Nama (body-strong) + NIK (mono, ink-muted). Kosong: "Nama tidak ditemukan. Pastikan departemen sudah benar." Wajib memilih dari daftar (teks bebas tidak dianggap pilihan).
 
-- [ ] Test Vitest: "budi", "santo", "santosoo" menemukan Budi Santoso (PRD §8 #4); "BUDI" juga; dua "Agus Setiawan" tampil dengan NIK berbeda dan pilihan mengirim id yang benar; keyboard ↓↓Enter memilih item kedua; ganti departemen → nilai dikosongkan; empty state.
-- [ ] Implement → PASS → commit.
+- [x] Test Vitest: pencarian awalan, huruf besar, satu dan dua typo, batas delapan hasil, nama kembar dengan NIK, pemilihan lewat keyboard, ganti departemen, dan hasil kosong. Teks bebas tidak menetapkan ID karyawan.
+- [x] Implementasi, verifikasi, dan commit. Gunakan build `fuse.js/basic`. Pratinjau komponen diuji dengan sentuhan di 360 px dan keyboard di 1280 px. Integrasi dengan form dan pemuatan daftar departemen dilakukan di Task 5.
 
 ### Task 4: TimePicker + BottomSheet
 
