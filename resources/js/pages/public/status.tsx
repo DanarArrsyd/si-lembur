@@ -12,7 +12,7 @@ import { formatDuration, formatHours } from '@/lib/overtime';
 import type { PublicStatusProps, StatusEntry } from '@/types/public';
 
 const textAction =
-    'inline-flex min-h-12 w-fit items-center rounded-sm text-sm font-semibold text-primary underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary';
+    'inline-flex min-h-12 w-fit items-center rounded-sm text-sm font-semibold text-primary-hover underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary';
 
 type StatusResult = {
     employeeId: number;

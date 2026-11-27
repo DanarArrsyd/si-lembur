@@ -298,7 +298,7 @@ export default function OvertimeForm({
                                 type="button"
                                 className={clsx(
                                     focusRing,
-                                    'min-h-12 px-2 text-sm font-semibold text-primary',
+                                    'min-h-12 px-2 text-sm font-semibold text-primary-hover',
                                 )}
                                 onClick={lookup.reload}
                             >

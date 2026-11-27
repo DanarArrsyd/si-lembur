@@ -166,7 +166,7 @@ export function TimePicker<Value extends string | number>({
                             className={clsx(
                                 'flex h-[52px] w-full items-center justify-between border-b border-line px-3 text-left font-mono text-[17px] text-ink tabular-nums last:border-b-0 hover:bg-surface-sunken',
                                 index === selectedIndex &&
-                                    'bg-primary-soft font-semibold text-primary',
+                                    'bg-primary-soft font-semibold text-primary-hover',
                                 index === activeIndex &&
                                     'outline-2 -outline-offset-2 outline-primary',
                             )}

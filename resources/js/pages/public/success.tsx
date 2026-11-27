@@ -45,7 +45,7 @@ export default function OvertimeSuccess({
                     <p className="text-[15px] font-semibold text-ink">
                         Nomor pengajuan
                     </p>
-                    <p className="font-mono text-lg font-semibold text-primary tabular-nums">
+                    <p className="font-mono text-lg font-semibold text-primary-hover tabular-nums">
                         {number}
                     </p>
                 </div>
