@@ -163,10 +163,19 @@ tests/Feature/Public/*Test.php, resources/js/**/*.test.tsx
 ### Task 8: Verifikasi & laporan
 
 - [x] Header publik: tautan "Cek status pengajuan" diaktifkan bersama Task 7.
-- [ ] `composer ci:check`, suite MySQL.
-- [ ] Uji manual di browser 360px dan 412px: isi form sampai sukses < 1 menit, tanpa scroll horizontal/zoom, keyboard-only, cek status.
-- [ ] Lighthouse mobile `/` dan `/status` (build produksi): Accessibility ≥ 95, Performance ≥ 85; kontras AA.
-- [ ] `caveman-review`, `caveman-stats`, centang ROADMAP, push, CI hijau, laporan.
+- [x] `composer ci:check`, suite MySQL.
+- [x] Uji manual di browser 360px dan 412px: isi form sampai sukses < 1 menit, tanpa scroll horizontal/zoom, keyboard-only, cek status.
+- [x] Lighthouse mobile `/` dan `/status` (build produksi): Accessibility ≥ 95, Performance ≥ 85; kontras AA.
+- [x] `caveman-review`, `caveman-stats`, centang ROADMAP, push, CI hijau, laporan.
+
+Hasil verifikasi akhir:
+
+- Build produksi, lint, typecheck, Pint, dan PHPStan lulus. Vitest 68 lulus. Pest 203 lulus pada MySQL 8.0.46, termasuk kedua tes konkurensi. SQLite menjalankan 201 tes dan melewati kedua tes tersebut.
+- Chromium 360px dan 412px: alur sentuh dan hanya keyboard dari form hingga halaman sukses dan cek status lulus. Empat uji browser otomatis membutuhkan 0,8–1,6 detik dari mulai isi sampai sukses, tanpa scroll horizontal atau zoom otomatis. Target waktu untuk karyawan perlu diuji saat UAT.
+- Lighthouse 13.6.0, profil mobile dengan simulasi throttling pada build produksi lokal (Performance/Accessibility): `/` 98/100, `/status` 100/100, status dengan riwayat hasil prefill 98/100.
+- Review menemukan teks biru pada tautan dan latar biru muda di bawah 4,5:1. Commit `48390aa` memakai token biru yang lebih gelap. Kontras terukur 6,59:1 pada tautan header dan 5,74:1 pada nomor pengajuan serta pilihan jam aktif.
+- JS awal terukur 147,0 KB gzip untuk form dan 126,9 KB gzip untuk cek status. Ambang Lighthouse tercapai. Anggaran awal 90 KB untuk form belum tercapai.
+- [GitHub Actions](https://github.com/DanarArrsyd/si-lembur/actions/runs/46030508425): job `ci` dan `mysql` lulus pada commit kode Fase 3.
 
 ---
 

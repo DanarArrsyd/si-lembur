@@ -35,13 +35,13 @@ Fase N — selesai
 - [x] `lib/overtime.ts` mirror kalkulator + test Vitest dengan kasus yang sama
 
 ## Fase 3 — Form publik + cek status
-- [ ] Endpoint lookup karyawan (field terbatas, throttle)
-- [ ] Komponen `Typeahead` (fuse.js, ARIA combobox), `TimePicker`, `BottomSheet`
-- [ ] Form + preview total real-time + info lewat batas
-- [ ] Layar "Periksa lagi" → submit → halaman sukses (signed URL) → reset form
-- [ ] Halaman cek status 60 hari
-- [ ] Throttle, honeypot, pesan error sesuai `BUSINESS_RULES.md` §2.1
-- [ ] Uji manual di viewport 360px & 412px; Lighthouse mobile
+- [x] Endpoint lookup karyawan (field terbatas, throttle)
+- [x] Komponen `Typeahead` (fuse.js, ARIA combobox), `TimePicker`, `BottomSheet`
+- [x] Form + preview total real-time + info lewat batas
+- [x] Layar "Periksa lagi" → submit → halaman sukses (signed URL) → reset form
+- [x] Halaman cek status 60 hari
+- [x] Throttle, honeypot, pesan error sesuai `BUSINESS_RULES.md` §2.1
+- [x] Uji manual di viewport 360px & 412px; Lighthouse mobile
 
 ## Fase 4 — Area supervisor
 - [ ] Login + throttle + akun nonaktif ditolak

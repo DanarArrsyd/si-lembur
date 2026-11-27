@@ -4,7 +4,7 @@ Untuk agent AI mana pun (Claude Code, Codex, Cursor, dll.) yang melanjutkan peke
 
 **Perbarui file ini di akhir setiap task** (status, commit, langkah berikutnya). Bila isi file ini berbeda dengan checkbox di rencana fase atau `docs/ROADMAP.md`, yang benar adalah checkbox + `git log`.
 
-Terakhir diperbarui: 2026-11-27, setelah Fase 3 Task 7.
+Terakhir diperbarui: 2026-11-27, setelah Fase 3 Task 8.
 
 ## Posisi sekarang
 
@@ -12,10 +12,11 @@ Terakhir diperbarui: 2026-11-27, setelah Fase 3 Task 7.
 |---|---|
 | 1 Fondasi | Selesai |
 | 2 Logika inti | Selesai |
-| 3 Form publik + cek status | **Berjalan**: Task 0–7 selesai, **berikutnya Task 8** |
-| 4–7 | Belum mulai |
+| 3 Form publik + cek status | Selesai |
+| 4 Area supervisor | Menunggu konfirmasi untuk memulai rencana fase |
+| 5–7 | Belum mulai |
 
-Rencana aktif: `docs/superpowers/plans/2026-11-27-fase-3-form-publik.md`. Sudah disetujui pemilik proyek pada 2026-11-27, termasuk 8 keputusan di bagian "Keputusan". Jangan menanyakan ulang keputusan itu.
+Rencana Fase 3: `docs/superpowers/plans/2026-11-27-fase-3-form-publik.md`. Disetujui pemilik proyek pada 2026-11-27, termasuk delapan keputusan di bagian "Keputusan". Rencana Fase 4 belum disusun.
 
 ### Fase 3, per task
 
@@ -29,14 +30,14 @@ Rencana aktif: `docs/superpowers/plans/2026-11-27-fase-3-form-publik.md`. Sudah 
 | 5 | Form publik + layar "Periksa lagi" | Selesai | `09ae983` |
 | 6 | Kirim + halaman sukses | Selesai | `335145c` |
 | 7 | Halaman cek status | Selesai | `d1cabe9` |
-| 8 | Verifikasi (360px/412px, Lighthouse), laporan fase | **Berikutnya** | – |
+| 8 | Verifikasi MySQL, browser, Lighthouse, review, dan push | Selesai | `48390aa` |
 
-Verifikasi Task 7: build produksi dan `composer ci:check` lulus lokal (Pest 201 lulus, 2 tes konkurensi khusus MySQL dilewati di SQLite, Vitest 68 lulus). Cek status lulus uji browser di 360px, 412px, dan 1280px, termasuk pencarian nama lewat keyboard, pergantian departemen, dan arahan ajukan ulang. Alur dari halaman sukses langsung mengisi nama dan memuat riwayat. Job `ci` dan `mysql` terakhir di GitHub lulus pada `403df3f`. Task 4–7 masih lokal.
+Verifikasi Task 8: build produksi dan `composer ci:check` lulus lokal. Pest lulus 203 tes di MySQL 8.0.46 (termasuk 2 tes konkurensi) dan 201 di SQLite (2 dilewati). Vitest lulus 68 tes. Alur pengisian sampai sukses lalu cek status lulus di Chromium 360px dan 412px dengan emulasi sentuh dan hanya keyboard. Tidak ada scroll horizontal atau zoom otomatis. Lighthouse mobile (Performance/Accessibility): `/` 98/100, `/status` 100/100, status dengan riwayat 98/100. [CI GitHub pada commit kode Fase 3](https://github.com/DanarArrsyd/si-lembur/actions/runs/46030508425) lulus di job `ci` dan `mysql`.
 
-## Hal yang perlu diketahui sebelum Task 8
+## Hal yang perlu diketahui sebelum Fase 4
 
 - **Layout halaman:** `resources/js/app.tsx` tidak memilih layout. Setiap halaman menyatakan sendiri: `Page.layout = [PublicLayout, { title: '…' }]`. Test `resources/js/pages/page-layouts.test.ts` memastikan ini.
-- **Bundle publik:** komponen yang dipakai form publik memakai `clsx`, bukan `cn()` dari `@/lib/utils`, supaya `tailwind-merge` tidak ikut termuat. JS awal `/` pada pengukuran Task 5 sekitar 144,6 KB gzip berdasarkan lima aset JS yang dimuat di browser. Ukur Lighthouse mobile Performance ≥ 85 di Task 8.
+- **Bundle publik:** komponen yang dipakai form publik memakai `clsx`, bukan `cn()` dari `@/lib/utils`, supaya `tailwind-merge` tidak ikut termuat. JS awal pada pengukuran akhir sekitar 147,0 KB gzip di `/` dan 126,9 KB di `/status`. Anggaran awal 90 KB untuk form belum tercapai. Kedua halaman memenuhi ambang Lighthouse mobile.
 - **Cek status** aktif dari header dan halaman sukses. `/api/status` memakai limiter tersendiri 60/menit per IP dan hanya mengirim riwayat karyawan aktif, tanpa kegiatan lembur. Tautan dari halaman sukses memilih departemen karyawan saat ini. Ringkasan di halaman sukses tetap menunjukkan departemen saat lembur dicatat.
 - **Gaya form publik** (DESIGN.md §4): label 15px/600, nilai input 17px, kontrol 52px, baris pilihan ≥ 48px, border `line-control`, invalid `border-danger bg-danger-soft`, error 14px `text-danger`. Shadow melayang memakai `shadow-[var(--shadow-float)]`.
 - **Mock Inertia untuk test** (`resources/js/test/inertia-mock.tsx`) harus punya `router.on`, karena `PanelLayout` merender `Toaster`.
