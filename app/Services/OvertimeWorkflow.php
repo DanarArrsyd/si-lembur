@@ -53,17 +53,14 @@ class OvertimeWorkflow
     public function submitPublic(OvertimeInput $input, CarbonImmutable $now): Overtime
     {
         return DB::transaction(function () use ($input, $now) {
-            $employee = $this->lockEmployee($input);
+            $employee = $this->eligibleEmployee($input, lock: true);
             $description = $this->validDescription($input);
 
-            if ($input->dateChoice === null) {
-                throw ValidationException::withMessages(['overtime_date' => 'Pilih tanggal lembur.']);
-            }
-
-            $date = $this->dateRule->resolvePublic($input->dateChoice, $now);
+            $date = $this->publicDate($input, $now);
+            $times = $this->validatedTimes($employee, $input, $date, completedBy: $now);
             $userAgent = request()->userAgent();
 
-            $overtime = $this->create($employee, $input, $date, $description, $now, [
+            $overtime = $this->create($employee, $times, $date, $description, $now, [
                 'status' => OvertimeStatus::PENDING,
                 'source' => OvertimeSource::PUBLIC,
                 'submitted_ip' => request()->ip(),
@@ -74,6 +71,33 @@ class OvertimeWorkflow
 
             return $overtime;
         }, self::ATTEMPTS);
+    }
+
+    /**
+     * @return array{date: string, start_at: string, end_at: string, break_minutes: int, total_minutes: int, day_type: string, exceeds_daily_limit: bool, exceeds_weekly_limit: bool, employee: array{name: string, nik: string}, department: string, description: string}
+     */
+    public function previewPublic(OvertimeInput $input, CarbonImmutable $now): array
+    {
+        $employee = $this->eligibleEmployee($input);
+        $description = $this->validDescription($input);
+        $date = $this->publicDate($input, $now);
+        $times = $this->validatedTimes($employee, $input, $date, completedBy: $now);
+        $dayType = $this->dayTypes->resolve($date);
+        $limits = $this->limits->preview($employee->id, $date, $times->startAt, $times->totalMinutes, $dayType);
+
+        return [
+            'date' => $date->toDateString(),
+            'start_at' => $times->startAt->format('Y-m-d H:i'),
+            'end_at' => $times->endAt->format('Y-m-d H:i'),
+            'break_minutes' => $times->breakMinutes,
+            'total_minutes' => $times->totalMinutes,
+            'day_type' => $dayType->value,
+            'exceeds_daily_limit' => $limits['daily'],
+            'exceeds_weekly_limit' => $limits['weekly'],
+            'employee' => ['name' => $employee->name, 'nik' => $employee->nik],
+            'department' => $employee->department->name,
+            'description' => $description,
+        ];
     }
 
     /**
@@ -89,11 +113,12 @@ class OvertimeWorkflow
         }
 
         return DB::transaction(function () use ($actor, $input, $now) {
-            $employee = $this->lockEmployee($input);
+            $employee = $this->eligibleEmployee($input, lock: true);
             $description = $this->validDescription($input);
             $date = $this->panelDate($input, $now);
+            $times = $this->validatedTimes($employee, $input, $date);
 
-            $overtime = $this->create($employee, $input, $date, $description, $now, [
+            $overtime = $this->create($employee, $times, $date, $description, $now, [
                 'status' => OvertimeStatus::APPROVED,
                 'source' => OvertimeSource::SUPERVISOR,
                 'created_by' => $actor->id,
@@ -294,11 +319,8 @@ class OvertimeWorkflow
     /**
      * @param  array<string, mixed>  $attributes
      */
-    private function create(Employee $employee, OvertimeInput $input, CarbonImmutable $date, string $description, CarbonImmutable $now, array $attributes): Overtime
+    private function create(Employee $employee, OvertimeTimes $times, CarbonImmutable $date, string $description, CarbonImmutable $now, array $attributes): Overtime
     {
-        $times = $this->calculator->calculate($date, $input->startTime, $input->endTime, $input->breakMinutes);
-        $this->overlaps->assertNoConflict($employee->id, $times->startAt, $times->endAt);
-
         $overtime = Overtime::query()->create([
             'number' => $this->numbers->next($now),
             'employee_id' => $employee->id,
@@ -339,9 +361,13 @@ class OvertimeWorkflow
      *
      * @throws ValidationException
      */
-    private function lockEmployee(OvertimeInput $input): Employee
+    private function eligibleEmployee(OvertimeInput $input, bool $lock = false): Employee
     {
-        $employee = Employee::query()->with('department')->lockForUpdate()->find($input->employeeId);
+        $employees = Employee::query()->with('department');
+        if ($lock) {
+            $employees->lockForUpdate();
+        }
+        $employee = $employees->find($input->employeeId);
 
         if ($employee === null
             || ! $employee->is_active
@@ -351,6 +377,33 @@ class OvertimeWorkflow
         }
 
         return $employee;
+    }
+
+    private function publicDate(OvertimeInput $input, CarbonImmutable $now): CarbonImmutable
+    {
+        if ($input->dateChoice === null) {
+            throw ValidationException::withMessages(['overtime_date' => 'Pilih tanggal lembur.']);
+        }
+
+        $date = $this->dateRule->resolvePublic($input->dateChoice, $now);
+        if ($input->date !== null && ! $input->date->isSameDay($date)) {
+            throw ValidationException::withMessages(['overtime_date' => 'Tanggal lembur sudah berubah. Pilih tanggal lagi.']);
+        }
+
+        return $date;
+    }
+
+    private function validatedTimes(Employee $employee, OvertimeInput $input, CarbonImmutable $date, ?CarbonImmutable $completedBy = null): OvertimeTimes
+    {
+        $times = $this->calculator->calculate($date, $input->startTime, $input->endTime, $input->breakMinutes);
+
+        if ($completedBy !== null && $times->endAt->greaterThan($completedBy)) {
+            throw ValidationException::withMessages(['end_time' => 'Isi lembur setelah jam selesai.']);
+        }
+
+        $this->overlaps->assertNoConflict($employee->id, $times->startAt, $times->endAt);
+
+        return $times;
     }
 
     private function lockOvertime(Overtime $overtime, OvertimeStatus $expected): Overtime

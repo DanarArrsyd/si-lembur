@@ -8,7 +8,9 @@ import { roundTimeDown } from '@/lib/time-options';
 type Option<Value> = Value | { value: Value; label: string };
 
 type Props<Value extends string | number> = {
+    id?: string;
     label: string;
+    error?: string;
     value: Value | null;
     onChange: (value: Value) => void;
     options: readonly Option<Value>[];
@@ -16,7 +18,9 @@ type Props<Value extends string | number> = {
 };
 
 export function TimePicker<Value extends string | number>({
+    id: fieldId,
     label,
+    error,
     value,
     onChange,
     options,
@@ -110,10 +114,18 @@ export function TimePicker<Value extends string | number>({
                 }}
                 trigger={
                     <button
+                        id={fieldId}
                         type="button"
+                        aria-invalid={!!error}
+                        aria-describedby={error ? `${id}-error` : undefined}
                         disabled={choices.length === 0}
                         aria-labelledby={`${id}-label ${id}-value`}
-                        className="flex h-[52px] w-full items-center justify-between gap-2 rounded-sm border border-line-control bg-surface px-3 text-left text-[17px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:opacity-50"
+                        className={clsx(
+                            'flex h-[52px] w-full items-center justify-between gap-2 rounded-sm border px-3 text-left text-[17px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:opacity-50',
+                            error
+                                ? 'border-danger bg-danger-soft'
+                                : 'border-line-control bg-surface',
+                        )}
                     >
                         <span
                             id={`${id}-value`}
@@ -171,6 +183,11 @@ export function TimePicker<Value extends string | number>({
                     ))}
                 </div>
             </BottomSheet>
+            {error && (
+                <p id={`${id}-error`} className="text-sm text-danger">
+                    {error}
+                </p>
+            )}
         </div>
     );
 }

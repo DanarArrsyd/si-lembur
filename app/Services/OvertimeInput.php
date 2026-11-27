@@ -8,7 +8,8 @@ use App\Enums\DateChoice;
 use Carbon\CarbonImmutable;
 
 /**
- * Isi form lembur. Form publik mengisi $dateChoice; form panel (Supervisor/Admin) mengisi $date.
+ * Form publik mengisi $dateChoice dan membawa $date untuk mendeteksi pergantian tanggal.
+ * Form panel (Supervisor/Admin) mengisi $date sebagai tanggal lembur.
  * Bentuk dasar (tipe, wajib diisi) divalidasi Form Request; aturan bisnis oleh OvertimeWorkflow.
  */
 final readonly class OvertimeInput

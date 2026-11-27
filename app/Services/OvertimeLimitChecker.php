@@ -8,6 +8,7 @@ use App\Enums\DayType;
 use App\Enums\OvertimeStatus;
 use App\Models\Overtime;
 use Carbon\CarbonImmutable;
+use Illuminate\Database\Eloquent\Builder;
 
 /**
  * Penanda batas lembur (BUSINESS_RULES.md §4). Hanya peringatan, tidak memblok.
@@ -24,15 +25,7 @@ class OvertimeLimitChecker
 
     public function recalculateWeek(int $employeeId, CarbonImmutable $anyDateInWeek): void
     {
-        $monday = $anyDateInWeek->startOfWeek(CarbonImmutable::MONDAY)->toDateString();
-        $sunday = $anyDateInWeek->endOfWeek(CarbonImmutable::SUNDAY)->toDateString();
-
-        $overtimes = Overtime::query()
-            ->where('employee_id', $employeeId)
-            ->whereIn('status', [OvertimeStatus::PENDING, OvertimeStatus::APPROVED])
-            // whereDate: SQLite menyimpan kolom date sebagai "Y-m-d 00:00:00".
-            ->whereDate('overtime_date', '>=', $monday)
-            ->whereDate('overtime_date', '<=', $sunday)
+        $overtimes = $this->week($employeeId, $anyDateInWeek)
             ->orderBy('start_at')
             ->orderBy('id')
             ->get();
@@ -64,5 +57,35 @@ class OvertimeLimitChecker
                 $overtime->saveQuietly();
             }
         }
+    }
+
+    /** @return array{daily: bool, weekly: bool} */
+    public function preview(int $employeeId, CarbonImmutable $date, CarbonImmutable $startAt, int $minutes, DayType $dayType, ?int $ignoreId = null): array
+    {
+        if ($dayType === DayType::HARI_LIBUR) {
+            return ['daily' => false, 'weekly' => false];
+        }
+
+        $week = $this->week($employeeId, $date)
+            ->where('day_type', DayType::HARI_KERJA)
+            ->when($ignoreId !== null, fn ($query) => $query->whereKeyNot($ignoreId));
+
+        $daily = (clone $week)->whereDate('overtime_date', $date->toDateString())->sum('total_minutes');
+        $weekly = $week->where('start_at', '<=', $startAt)->sum('total_minutes');
+
+        return [
+            'daily' => $daily + $minutes > $this->settings->dailyLimitMinutes(),
+            'weekly' => $weekly + $minutes > $this->settings->weeklyLimitMinutes(),
+        ];
+    }
+
+    /** @return Builder<Overtime> */
+    private function week(int $employeeId, CarbonImmutable $date): Builder
+    {
+        return Overtime::query()
+            ->where('employee_id', $employeeId)
+            ->whereIn('status', [OvertimeStatus::PENDING, OvertimeStatus::APPROVED])
+            ->whereDate('overtime_date', '>=', $date->startOfWeek(CarbonImmutable::MONDAY)->toDateString())
+            ->whereDate('overtime_date', '<=', $date->endOfWeek(CarbonImmutable::SUNDAY)->toDateString());
     }
 }

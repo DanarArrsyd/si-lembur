@@ -5,6 +5,7 @@ import { searchEmployees } from '@/lib/employee-search';
 import type { EmployeeOption } from '@/types/public';
 
 type Props = {
+    id?: string;
     /** Departemen terpilih; null = belum dipilih (input nonaktif). */
     departmentId: number | null;
     /** Karyawan aktif departemen itu, dimuat sekali dari /api/departments/{id}/employees. */
@@ -23,6 +24,7 @@ type Props = {
  * Ganti departemen → nilai dan teks dikosongkan.
  */
 export function Typeahead({
+    id: fieldId,
     departmentId,
     employees,
     loading = false,
@@ -31,7 +33,7 @@ export function Typeahead({
     error,
 }: Props) {
     const id = useId();
-    const inputId = `${id}-input`;
+    const inputId = fieldId ?? `${id}-input`;
     const listId = `${id}-list`;
     const helpId = `${id}-help`;
     const errorId = `${id}-error`;
