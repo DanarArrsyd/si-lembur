@@ -53,8 +53,13 @@ resources/js/
   lib/              overtime.ts (preview hitung, mirror OvertimeCalculator), format.ts
   styles/           tokens.css (dari DESIGN.md)
 tests/
-  Unit/             Calculator, DateRule, DayType, Limit, Overlap
-  Feature/          PublicSubmit, Approval, Authorization, Export, Import
+  Unit/             Enum dan logika murni tanpa database
+  Feature/
+    Services/       Calculator, DateRule, DayType, Limit, Overlap, NumberGenerator, Settings, AuditLogger
+    Workflow/       Submit publik & supervisor, transisi status, edit + hitung ulang
+    Authorization/  Policy dan middleware role
+    Public/, Panel/ Controller per halaman (Public mulai Fase 3, Panel mulai Fase 4)
+  Concurrency/      Uji race dengan proses paralel; hanya jalan di MySQL/MariaDB (skip di SQLite)
 ```
 
 ## 3. Rute
@@ -105,6 +110,13 @@ overtimes
   timestamps
   index (employee_id, start_at, end_at)
   index (department_id, status, overtime_date)
+
+overtime_number_counters
+  date DATE (PK), last_number INT UNSIGNED
+  -- Penghitung nomor LBR-YYYYMMDD-NNNN per tanggal dibuat. Satu UPSERT atomik di dalam
+  -- transaksi yang sama dengan penyimpanan pengajuan: baris tanggal itu terkunci sampai commit,
+  -- dan nomor ikut batal bila penyimpanan gagal. Dipakai karena pola INSERT IGNORE lalu
+  -- SELECT ... FOR UPDATE deadlock di InnoDB.
 
 holidays
   id, date (unique), name, timestamps
