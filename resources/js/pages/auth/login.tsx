@@ -18,6 +18,15 @@ export default function Login({ status }: Props) {
         <>
             <Head title="Masuk" />
 
+            {status && (
+                <p
+                    role="status"
+                    className="mb-4 rounded-md bg-warning-soft px-3 py-2 text-sm text-warning"
+                >
+                    {status}
+                </p>
+            )}
+
             <Form
                 {...store.form()}
                 resetOnSuccess={['password']}
@@ -73,12 +82,6 @@ export default function Login({ status }: Props) {
                     </div>
                 )}
             </Form>
-
-            {status && (
-                <div className="mb-4 text-center text-sm font-medium">
-                    {status}
-                </div>
-            )}
         </>
     );
 }

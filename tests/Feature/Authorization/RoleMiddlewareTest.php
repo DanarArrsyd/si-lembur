@@ -2,9 +2,12 @@
 
 declare(strict_types=1);
 
+use App\Models\AuditLog;
 use App\Models\Department;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Inertia\Testing\AssertableInertia;
 
 beforeEach(function () {
     Route::middleware(['web', 'auth', 'role:ADMIN'])->get('/_test/admin-only', fn () => 'ok');
@@ -35,10 +38,31 @@ it('allows admins on admin-only routes', function () {
         ->assertOk();
 });
 
-it('logs out inactive users and sends them to login', function () {
-    $user = User::factory()->admin()->create(['is_active' => false]);
+it('ends a session when the account becomes inactive and shows the login message', function () {
+    $user = User::factory()->supervisor()->create();
+    $this->actingAs($user)->get('/panel')->assertOk();
 
-    $this->actingAs($user)->get('/_test/panel')->assertRedirect('/login');
+    $user->update(['is_active' => false]);
+
+    $this->get('/panel')
+        ->assertRedirect('/login')
+        ->assertSessionHas('status', 'Akun ini sudah tidak aktif. Hubungi admin.');
+    $this->assertGuest();
+
+    $this->get('/login')->assertInertia(fn (AssertableInertia $page) => $page
+        ->component('auth/login')
+        ->where('status', 'Akun ini sudah tidak aktif. Hubungi admin.'));
+});
+
+it('does not report a successful login when an inactive account returns with an old remember cookie', function () {
+    $user = User::factory()->supervisor()->create(['is_active' => false]);
+    $cookie = Auth::guard('web')->getRecallerName();
+    $value = $user->id.'|'.$user->getRememberToken().'|'.$user->getAuthPassword();
+
+    $this->withCookie($cookie, $value)->get('/panel')
+        ->assertRedirect('/login')
+        ->assertSessionHas('status', 'Akun ini sudah tidak aktif. Hubungi admin.');
 
     $this->assertGuest();
+    expect(AuditLog::query()->where('action', 'auth.login_succeeded')->count())->toBe(0);
 });

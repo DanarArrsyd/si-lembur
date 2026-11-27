@@ -31,7 +31,7 @@ class EnsureRole
             $request->session()->invalidate();
             $request->session()->regenerateToken();
 
-            return redirect()->route('login');
+            return redirect()->route('login')->with('status', 'Akun ini sudah tidak aktif. Hubungi admin.');
         }
 
         $allowed = array_map(fn (string $role) => UserRole::from($role), $roles);

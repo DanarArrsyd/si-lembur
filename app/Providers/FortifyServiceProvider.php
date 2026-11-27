@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Actions\Auth\AttemptActiveLogin;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
+use Laravel\Fortify\Actions\AttemptToAuthenticate;
 use Laravel\Fortify\Fortify;
 
 class FortifyServiceProvider extends ServiceProvider
@@ -21,6 +23,8 @@ class FortifyServiceProvider extends ServiceProvider
     public function register(): void
     {
         Fortify::ignoreRoutes();
+
+        $this->app->bind(AttemptToAuthenticate::class, AttemptActiveLogin::class);
     }
 
     public function boot(): void
