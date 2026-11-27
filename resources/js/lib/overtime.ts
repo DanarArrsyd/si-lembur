@@ -15,8 +15,8 @@ export type OvertimeCalculation =
       }
     | { ok: false; rule: OvertimeRule; message: string };
 
-const STEP_MINUTES = 15;
-const MAX_BREAK_MINUTES = 240;
+export const STEP_MINUTES = 15;
+export const MAX_BREAK_MINUTES = 240;
 const DEFAULT_MAX_GROSS_MINUTES = 16 * 60;
 
 const messages = {

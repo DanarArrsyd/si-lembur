@@ -93,8 +93,8 @@ tests/Feature/Public/*Test.php, resources/js/**/*.test.tsx
 - `<TimePicker label value onChange options anchor />` — tombol 52px menampilkan nilai (mono) atau "Pilih jam"; sheet berisi `role="listbox"` baris 52px; saat dibuka scroll ke `value` atau ke `anchor` (jam server terdekat, dibulatkan ke bawah 15 menit). Istirahat memakai komponen yang sama dengan opsi 0–240 menit (label "0 menit" … "4 jam").
 - `timeOptions(): string[]` (96 item "00:00"…"23:45"), `breakOptions(): {value: number, label: string}[]` di `lib/time-options.ts`.
 
-- [ ] Test Vitest: 96 opsi; sheet terbuka memanggil `scrollIntoView` pada opsi anchor bila belum ada nilai, dan pada nilai bila ada; memilih menutup sheet dan memanggil `onChange`; tombol punya label yang menyebut nilai saat ini.
-- [ ] Implement → PASS → commit.
+- [x] Test Vitest: 96 opsi jam dan 17 opsi istirahat. Saat dibuka, daftar bergulir ke pilihan yang ada atau jam server yang dibulatkan ke bawah. Tes mencakup nama kontrol dan nilainya, pemilihan dari daftar, navigasi keyboard, serta pengembalian fokus.
+- [x] Implementasi, verifikasi, dan commit. Pratinjau komponen diuji dengan sentuhan di 360 px dan keyboard di 1280 px. Integrasi ke form publik dilakukan di Task 5.
 
 ### Task 5: Form publik + layar Periksa lagi
 
