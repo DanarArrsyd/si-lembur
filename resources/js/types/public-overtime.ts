@@ -26,4 +26,15 @@ export type OvertimeReview = OvertimeSummary & {
 export type OvertimeSubmission = OvertimeSummary & {
     number: string;
     status: 'PENDING' | 'APPROVED' | 'REJECTED';
+    status_url: string | null;
+};
+
+type OvertimeHistoryItem = Pick<
+    OvertimeSubmission,
+    'number' | 'date' | 'start_at' | 'end_at' | 'total_minutes' | 'status'
+> & { reject_reason: string | null };
+
+export type OvertimeHistory = {
+    employeeName: string;
+    items: OvertimeHistoryItem[];
 };

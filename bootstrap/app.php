@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Public\StatusCheckController;
 use App\Http\Middleware\EnsureRole;
 use App\Http\Middleware\HandleInertiaRequests;
 use Illuminate\Foundation\Application;
@@ -29,6 +30,10 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (InvalidSignatureException $exception, Request $request) {
+            if ($request->routeIs('public.status.history')) {
+                return StatusCheckController::invalidLink($request);
+            }
+
             if ($request->routeIs('public.success')) {
                 return Inertia::render('public/success', ['submission' => null])
                     ->toResponse($request)

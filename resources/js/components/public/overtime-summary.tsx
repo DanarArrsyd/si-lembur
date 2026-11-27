@@ -1,21 +1,9 @@
+import { formatDate, formatEndTime } from '@/lib/date-display';
 import { formatDuration } from '@/lib/overtime';
 import type { OvertimeSummary as Summary } from '@/types/public-overtime';
 import { TotalCard } from './total-card';
 
-const dateFormatter = new Intl.DateTimeFormat('id-ID', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-    timeZone: 'UTC',
-});
-
-function formatDate(date: string) {
-    return dateFormatter.format(new Date(`${date}T00:00:00Z`));
-}
-
 export function OvertimeSummary({ summary }: { summary: Summary }) {
-    const endDate = summary.end_at.slice(0, 10);
-    const endTime = summary.end_at.slice(11);
     const details = [
         { label: 'Departemen', value: summary.department },
         { label: 'Nama', value: summary.employee.name },
@@ -28,10 +16,7 @@ export function OvertimeSummary({ summary }: { summary: Summary }) {
         { label: 'Jam mulai', value: summary.start_at.slice(11), mono: true },
         {
             label: 'Jam selesai',
-            value:
-                endDate === summary.date
-                    ? endTime
-                    : `${endTime} · ${formatDate(endDate)}`,
+            value: formatEndTime(summary.date, summary.end_at),
             mono: true,
         },
         {

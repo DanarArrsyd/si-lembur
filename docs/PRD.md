@@ -66,8 +66,9 @@ Perilaku:
 
 ### 4.2 Cek status
 
-- Pilih departemen → typeahead nama → daftar pengajuan **60 hari terakhir**: tanggal, jam, total, status, alasan penolakan.
-- Read-only.
+- Setelah pengajuan publik terkirim, pilih **Cek status** dari bukti pengajuan. Karyawan bisa menyimpan tautan pribadi yang berlaku **60 hari sejak pengajuan** dan membukanya kembali tanpa login.
+- Tautan menampilkan riwayat milik karyawan tersebut selama **60 hari terakhir** dengan nomor, tanggal, jam, total, status, dan alasan penolakan. Riwayat hanya bisa dibaca.
+- Halaman umum **Cek status pengajuan** memberi petunjuk akses. Jika tautan pribadi tidak tersedia, karyawan menghubungi supervisor departemen.
 
 ## 5. Halaman login (Supervisor & Admin)
 

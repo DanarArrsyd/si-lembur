@@ -65,9 +65,9 @@ tests/
 | POST | `/lembur/periksa` | Publik, throttle | Validasi dan ringkasan tanpa menyimpan pengajuan |
 | POST | `/lembur` | Publik, throttle | Submit |
 | GET | `/lembur/sukses/{number}` | Publik (signed URL) | Halaman sukses |
-| GET | `/status` | Publik | Cek status |
+| GET | `/status` | Publik | Petunjuk mendapatkan tautan cek status |
+| GET | `/status/{number}` | Tautan pribadi bertanda tangan, throttle | Pengajuan 60 hari terakhir milik karyawan dari pengajuan tersebut |
 | GET | `/api/departments/{id}/employees` | Publik, throttle | Daftar karyawan aktif (`id`, `nik`, `name` saja) |
-| GET | `/api/status` | Publik, throttle | Pengajuan 60 hari terakhir per karyawan |
 | GET/POST | `/login`, `/logout` | – | Auth |
 | * | `/panel/...` | `auth` + role | Area supervisor & admin |
 
@@ -131,6 +131,7 @@ Simpan datetime sebagai waktu lokal `Asia/Jakarta` (konsisten dengan `APP_TIMEZO
 - Honeypot field + CSRF.
 - Endpoint karyawan hanya mengembalikan `id`, `nik`, `name` karyawan aktif.
 - Halaman sukses memakai signed URL agar nomor pengajuan orang lain tidak bisa ditebak-buka.
+- Tautan riwayat bertanda tangan berlaku 60 hari sejak pengajuan publik, dibuat dari halaman bukti, dan hanya menunjukkan riwayat karyawan aktif yang terkait dengan nomor pengajuan. Batasi 60 request/menit per IP. Respons riwayat tidak di-cache dan memakai kebijakan referrer `no-referrer`.
 
 **Area login**
 - Throttle login 5/menit per username + IP. Akun nonaktif ditolak.

@@ -4,6 +4,7 @@ import { OvertimeSummary } from '@/components/public/overtime-summary';
 import { StatusPill } from '@/components/status-pill';
 import PublicLayout from '@/layouts/public-layout';
 import { home } from '@/routes';
+import { status } from '@/routes/public';
 import type { OvertimeSubmission } from '@/types/public-overtime';
 
 export default function SubmissionSuccess({
@@ -48,7 +49,8 @@ export default function SubmissionSuccess({
             ) : (
                 <p className="text-[17px] text-ink-muted">
                     Tautan bukti pengajuan berlaku selama 24 jam. Untuk cek
-                    status pengajuan, hubungi supervisor departemen.
+                    status, buka tautan pribadi yang sudah disimpan atau hubungi
+                    supervisor departemen.
                 </p>
             )}
             <div className="sticky bottom-0 -mx-4 grid gap-2 border-t border-line bg-surface px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
@@ -59,20 +61,20 @@ export default function SubmissionSuccess({
                 >
                     {submission ? 'Isi lembur lagi' : 'Kembali ke form'}
                 </a>
-                {submission && (
-                    <button
-                        type="button"
-                        disabled
-                        className="h-[52px] rounded-md border border-line-control bg-surface px-4 text-[17px] font-semibold opacity-50"
-                    >
-                        Cek status
-                    </button>
-                )}
+                <a
+                    href={submission?.status_url ?? status.url()}
+                    rel="noreferrer"
+                    className="flex min-h-[52px] items-center justify-center rounded-md border border-line-control bg-surface px-4 text-[17px] font-semibold hover:bg-surface-sunken"
+                >
+                    Cek status
+                </a>
             </div>
         </section>
     );
 }
 
 SubmissionSuccess.layout = (page: ReactNode) => (
-    <PublicLayout title="Bukti pengajuan">{page}</PublicLayout>
+    <PublicLayout title="Bukti pengajuan" showStatusLink={false}>
+        {page}
+    </PublicLayout>
 );

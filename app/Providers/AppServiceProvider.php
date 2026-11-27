@@ -31,6 +31,7 @@ class AppServiceProvider extends ServiceProvider
         $publicOvertimeLimit = static fn (Request $request) => Limit::perMinute(10)->by($request->ip() ?? '');
         RateLimiter::for('public-overtime-review', $publicOvertimeLimit);
         RateLimiter::for('public-overtime-submit', $publicOvertimeLimit);
+        RateLimiter::for('public-overtime-status', static fn (Request $request) => Limit::perMinute(60)->by($request->ip() ?? ''));
     }
 
     /**

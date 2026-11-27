@@ -1,9 +1,11 @@
 import { Head } from '@inertiajs/react';
 import type { ReactNode } from 'react';
 import { Wordmark } from '@/components/wordmark';
+import { status } from '@/routes/public';
 
 type Props = {
     title?: string;
+    showStatusLink?: boolean;
     children: ReactNode;
 };
 
@@ -12,6 +14,7 @@ type Props = {
  */
 export default function PublicLayout({
     title = 'Input lembur',
+    showStatusLink = true,
     children,
 }: Props) {
     return (
@@ -21,10 +24,15 @@ export default function PublicLayout({
             <header className="border-b border-line bg-surface">
                 <div className="mx-auto flex max-w-[480px] flex-col gap-2 px-4 py-4">
                     <Wordmark variant="public" />
-                    {/* Jadi tautan ke /status setelah halaman cek status dibuat di Fase 3. */}
-                    <p className="text-sm text-ink-muted">
-                        Cek status pengajuan: segera tersedia
-                    </p>
+                    {showStatusLink && (
+                        <a
+                            href={status.url()}
+                            rel="noreferrer"
+                            className="inline-flex min-h-12 w-fit items-center rounded-sm text-sm font-semibold text-primary underline"
+                        >
+                            Cek status pengajuan
+                        </a>
+                    )}
                 </div>
             </header>
 

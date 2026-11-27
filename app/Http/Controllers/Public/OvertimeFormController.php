@@ -66,7 +66,7 @@ class OvertimeFormController
     public function success(Request $request, string $number): HttpResponse
     {
         $overtime = Overtime::query()
-            ->with(['employee:id,name,nik', 'department:id,name'])
+            ->with(['employee:id,name,nik,is_active', 'department:id,name'])
             ->where('source', OvertimeSource::PUBLIC)
             ->where('number', $number)
             ->firstOrFail();
@@ -75,6 +75,13 @@ class OvertimeFormController
             'submission' => [
                 'number' => $overtime->number,
                 'status' => $overtime->status->value,
+                'status_url' => $overtime->employee->is_active
+                    ? URL::temporarySignedRoute(
+                        'public.status.history',
+                        ($overtime->created_at ?? CarbonImmutable::now())->toImmutable()->addDays(StatusCheckController::HISTORY_DAYS),
+                        ['number' => $overtime->number],
+                    )
+                    : null,
                 'date' => $overtime->overtime_date->toDateString(),
                 'start_at' => $overtime->start_at->format('Y-m-d H:i'),
                 'end_at' => $overtime->end_at->format('Y-m-d H:i'),

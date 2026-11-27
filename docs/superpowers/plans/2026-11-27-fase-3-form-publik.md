@@ -25,7 +25,7 @@
 
 1. **Picker jam = bottom sheet** (bukan `<select>` native). Alasan: PRD minta "saat dibuka langsung scroll ke jam terdekat". `<select>` native di Android selalu membuka dari pilihan terpilih/atas; supaya bisa mulai dari jam sekarang kita harus mengisi jam default yang mungkin salah dan lolos tanpa dicek karyawan. Bottom sheet: daftar 96 jam (baris 52px, mono), terbuka di jam server terdekat tanpa mengisi apa pun. Dipakai juga untuk Istirahat (0–4 jam).
 2. **"Periksa lagi" divalidasi server.** Tombol "Lanjut periksa" → `POST /lembur/periksa` (semua aturan R1–R8 + info lewat batas, tanpa menyimpan) → layar ringkasan. "Kirim lembur" → `POST /lembur` (validasi ulang + simpan). Info lewat batas harian/mingguan tampil di layar periksa (butuh total lembur lain hari itu/minggu itu yang hanya ada di server). Total jam di form tetap real-time dari `lib/overtime.ts`.
-3. **Cek status bisa melihat pengajuan siapa pun** di departemen terpilih (sesuai PRD: tanpa login, pilih departemen → nama). Yang tampil hanya tanggal, jam, total, status, alasan tolak; kegiatan tidak ditampilkan. Mohon konfirmasi ini memang diterima.
+3. **Cek status memakai tautan pribadi tanpa login.** Karyawan memperoleh tautan dari bukti pengajuan publik untuk melihat riwayat miliknya. Halaman umum hanya memberi petunjuk akses.
 4. **Link halaman sukses berlaku 24 jam** (signed URL). Sesudah itu 403 dengan arahan ke Cek status.
 5. **Proxy tepercaya lewat `.env`:** `TRUSTED_PROXIES` (default kosong = tidak percaya header `X-Forwarded-For`). Isi bila Hostinger/Cloudflare dipakai di depan aplikasi, supaya throttle per IP memakai IP HP, bukan IP proxy. Perlu dicek saat deploy (Fase 7).
 6. **Honeypot terisi** → 422 dengan pesan umum "Pengajuan tidak bisa diproses. Muat ulang halaman lalu coba lagi." (tanpa menyimpan, dicatat di log aplikasi).
@@ -115,27 +115,27 @@ tests/Feature/Public/*Test.php, resources/js/**/*.test.tsx
 
 **Interfaces — Produces:**
 - `POST /lembur` (throttle `10,1`) → `submitPublic` → redirect 303 ke `URL::temporarySignedRoute('public.success', now()->addDay(), ['number' => …])`.
-- `GET /lembur/sukses/{number}` (middleware `signed`) → `public/success`: nomor (mono), ringkasan, StatusPill "Menunggu", teks "Lembur terkirim. Menunggu persetujuan supervisor.", tombol "Isi lembur lagi" (ke `/`, form kosong) dan "Cek status" (ke `/status?department=…&employee=…`).
+- `GET /lembur/sukses/{number}` (middleware `signed`) → `public/success`: nomor (mono), ringkasan, StatusPill "Menunggu", teks "Lembur terkirim. Menunggu persetujuan supervisor.", tombol "Isi lembur lagi" (ke `/`, form kosong), dan tautan pribadi "Cek status" dari Task 7.
 
 - [x] Test Feature: pengiriman membuat satu pengajuan MENUNGGU beserta audit log dan mengembalikan redirect 303 ke bukti bertanda tangan. Tautan tanpa tanda tangan atau kedaluwarsa menghasilkan 403. Nomor yang tidak ada menghasilkan 404. Pengajuan ditolak, duplikat, dan honeypot tidak menambah data.
 - [x] Test Vitest: dua klik menghasilkan satu permintaan simpan. Tombol menampilkan "Mengirim…" dan nonaktif selama proses. Jika server menolak, form kembali terbuka dengan isian dan pesan validasi.
 - [x] Implementasi, verifikasi, dan commit. Browser 360 px membuktikan tombol Back dan "Isi lembur lagi" membuka form kosong. Bukti pengajuan juga diperiksa di 1280 px.
-- Tombol "Cek status" diaktifkan di Task 7 bersama mekanisme akses riwayat. Sampai saat itu, halaman tautan kedaluwarsa mengarahkan karyawan ke supervisor.
+- Tautan "Cek status" diaktifkan di Task 7. Bukti pengajuan yang kedaluwarsa mengarahkan karyawan ke petunjuk cek status.
 
 ### Task 7: Cek status
 
 **Interfaces — Produces:**
-- `GET /status` → `public/status` (props `departments`, query `department`/`employee` opsional untuk prefill).
-- `GET /api/status?employee_id=` (throttle `60,1`) → pengajuan karyawan aktif dengan `overtime_date` ≥ hari ini − 60 hari, urut terbaru: `number, date, start, end, total_minutes, status, status_label, reject_reason`. Tanpa `description`.
-- Tampilan: daftar kartu (tanggal, jam, total mono, StatusPill, alasan tolak bila ada). Kosong: "Belum ada pengajuan dalam 60 hari terakhir." `StatusPill` dibuat di sini (DESIGN.md §6) dan dipakai ulang di panel.
+- `GET /status` → `public/status` berisi petunjuk memperoleh tautan pribadi.
+- `GET /status/{number}` (signed URL, 60 request/menit per IP) → riwayat karyawan aktif yang terkait dengan nomor pengajuan publik. Tautan berlaku 60 hari sejak pengajuan. Riwayat mencakup tanggal 60 hari lalu sampai hari ini, urut terbaru.
+- Tampilan: daftar kartu dengan tanggal, jam, total, StatusPill dari Task 6, dan alasan penolakan bila ada. Data kegiatan tidak disertakan. Kosong: "Belum ada pengajuan dalam 60 hari terakhir."
 
-- [ ] Test Feature: batas 60 hari (hari ke-60 masuk, ke-61 tidak); hanya karyawan itu; field `description` tidak ada; alasan tolak ada; 61× → 429.
-- [ ] Test Vitest: StatusPill selalu berisi kata; prefill dari query.
-- [ ] Implement → PASS → commit.
+- [x] Tes Feature: batas 60 hari, cakupan riwayat per karyawan, proyeksi data, tautan 403 tanpa tanda tangan atau jika kedaluwarsa, karyawan nonaktif, dan throttle 429.
+- [x] Tes Vitest: status berbentuk teks, alasan penolakan, tanggal lintas tengah malam, kondisi kosong, dan petunjuk untuk tautan yang tidak berlaku.
+- [x] Implementasi, verifikasi, dan commit.
 
 ### Task 8: Verifikasi & laporan
 
-- [ ] Header publik: aktifkan tautan "Cek status pengajuan" (sekarang halamannya ada).
+- [x] Header publik: tautan "Cek status pengajuan" aktif sejak Task 7.
 - [ ] `composer ci:check`, suite MySQL.
 - [ ] Uji manual di browser 360px dan 412px: isi form sampai sukses < 1 menit, tanpa scroll horizontal/zoom, keyboard-only, cek status.
 - [ ] Lighthouse mobile `/` dan `/status` (build produksi): Accessibility ≥ 95, Performance ≥ 85; kontras AA.
