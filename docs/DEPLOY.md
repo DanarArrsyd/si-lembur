@@ -61,7 +61,10 @@ SESSION_SECURE_COOKIE=true
 CACHE_STORE=database
 QUEUE_CONNECTION=sync
 LOG_LEVEL=warning
+TRUSTED_PROXIES=
 ```
+
+`TRUSTED_PROXIES`: biarkan kosong bila PHP menerima koneksi langsung dari HP. Bila ada proxy di depan aplikasi (Cloudflare, CDN/proxy Hostinger), isi IP proxy dipisah koma atau `*`. Tanpa ini, semua karyawan terlihat dengan IP proxy yang sama dan cepat kena batas 10 kirim/menit dan 60 lookup/menit. Cara cek: buat satu pengajuan dari HP lalu lihat `submitted_ip` di database; bila isinya IP proxy, bukan IP publik HP, isi variabel ini.
 
 Permission: `storage/` dan `bootstrap/cache/` bisa ditulis oleh PHP.
 
@@ -88,6 +91,7 @@ php artisan up
 - [ ] Akun admin produksi dibuat, password kuat; akun seeder contoh dihapus
 - [ ] Master departemen, karyawan, supervisor, kalender libur tahun berjalan terisi
 - [ ] Uji form publik dari HP karyawan via jaringan pabrik
+- [ ] `submitted_ip` pengajuan uji berisi IP HP, bukan IP proxy (lihat `TRUSTED_PROXIES`)
 - [ ] Uji approve dari HP supervisor
 - [ ] Uji export dengan template asli
 - [ ] Backup pertama tersimpan

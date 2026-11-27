@@ -98,8 +98,9 @@ tests/Feature/Public/*Test.php, resources/js/**/*.test.tsx
 - `GET /api/departments/{department}/employees` → `[{id, nik, name}]` karyawan aktif, urut nama. Departemen nonaktif/tidak ada → 404. Throttle `60,1`.
 - `TRUSTED_PROXIES` env → `$middleware->trustProxies(at: ...)` (kosong = tidak ada).
 
-- [ ] Test: hanya 3 field; karyawan nonaktif dan departemen lain tidak ikut; departemen nonaktif 404; request ke-61 dalam semenit → 429.
-- [ ] Implement → PASS → commit.
+- [x] Test: hanya 3 field; karyawan nonaktif dan departemen lain tidak ikut; departemen nonaktif 404; request ke-61 dalam semenit → 429.
+- [x] Implement → PASS → commit.
+- Hasil: `App\Http\Middleware\TrustProxies` membaca `config('app.trusted_proxies')` (`TRUSTED_PROXIES`, koma atau `*`); cara cek di produksi dicatat di `docs/DEPLOY.md` §3 dan checklist go-live.
 
 ### Task 3: Komponen Typeahead (ARIA combobox, fuse.js)
 
