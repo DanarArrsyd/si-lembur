@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Enums\OvertimeStatus;
+use App\Models\Department;
 use App\Models\Employee;
 use App\Models\Overtime;
 use Carbon\CarbonImmutable;
@@ -110,4 +111,16 @@ it('uses a separate submit quota from preview and lookup', function () {
     $this->postJson('/lembur', $invalid)->assertTooManyRequests();
     $this->getJson($lookup)->assertOk();
     $this->assertDatabaseEmpty('overtimes');
+});
+
+it('prefills status with the current department after an employee transfer', function () {
+    $response = $this->from('/')->post('/lembur', $this->payload)->assertStatus(303);
+    $previousName = $this->employee->department->name;
+    $newDepartment = Department::factory()->create();
+    $this->employee->update(['department_id' => $newDepartment->id]);
+
+    $this->get($response->headers->get('Location'))
+        ->assertInertia(fn (Assert $page) => $page
+            ->where('details.department', $previousName)
+            ->where('statusUrl', '/status?department='.$newDepartment->id.'&employee='.$this->employee->id));
 });

@@ -7,7 +7,7 @@ vi.mock('@inertiajs/react', async () =>
 );
 
 describe('PublicLayout', () => {
-    it('shows the wordmark and subtitle without dead links', () => {
+    it('shows the wordmark and links to status lookup', () => {
         render(
             <PublicLayout>
                 <p>Isi form</p>
@@ -16,9 +16,20 @@ describe('PublicLayout', () => {
 
         expect(screen.getByText('SI-LEMBUR')).toBeInTheDocument();
         expect(screen.getByText('Input Lembur · PT Kenco')).toBeInTheDocument();
-        // Belum ada halaman cek status (Fase 3): tidak boleh ada tautan mati.
-        expect(screen.getByText(/Cek status pengajuan/)).toBeInTheDocument();
-        expect(screen.queryByRole('link')).not.toBeInTheDocument();
+        expect(
+            screen.getByRole('link', { name: 'Cek status pengajuan' }),
+        ).toHaveAttribute('href', '/status');
         expect(screen.getByRole('main')).toHaveTextContent('Isi form');
+    });
+    it('links to the form from the status page', () => {
+        render(
+            <PublicLayout showFormLink>
+                <p>Cek status pengajuan</p>
+            </PublicLayout>,
+        );
+
+        expect(
+            screen.getByRole('link', { name: 'Isi lembur' }),
+        ).toHaveAttribute('href', '/');
     });
 });

@@ -60,7 +60,7 @@ class OvertimeFormController
     public function success(Request $request, string $number): Response
     {
         $overtime = Overtime::query()
-            ->with(['employee:id,name,nik', 'department:id,name'])
+            ->with(['employee:id,name,nik,department_id', 'department:id,name'])
             ->where('number', $number)
             ->firstOrFail();
 
@@ -79,7 +79,7 @@ class OvertimeFormController
                 'description' => $overtime->description,
             ],
             'statusUrl' => '/status?'.http_build_query([
-                'department' => $overtime->department_id,
+                'department' => $overtime->employee->department_id,
                 'employee' => $overtime->employee_id,
             ]),
         ])->toResponse($request);

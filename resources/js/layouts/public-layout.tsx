@@ -1,9 +1,10 @@
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import type { ReactNode } from 'react';
 import { Wordmark } from '@/components/wordmark';
 
 type Props = {
     title?: string;
+    showFormLink?: boolean;
     children: ReactNode;
 };
 
@@ -12,6 +13,7 @@ type Props = {
  */
 export default function PublicLayout({
     title = 'Input lembur',
+    showFormLink = false,
     children,
 }: Props) {
     return (
@@ -21,10 +23,12 @@ export default function PublicLayout({
             <header className="border-b border-line bg-surface">
                 <div className="mx-auto flex max-w-[480px] flex-col gap-2 px-4 py-4">
                     <Wordmark variant="public" />
-                    {/* Jadi tautan ke /status setelah halaman cek status dibuat di Fase 3. */}
-                    <p className="text-sm text-ink-muted">
-                        Cek status pengajuan: segera tersedia
-                    </p>
+                    <Link
+                        href={showFormLink ? '/' : '/status'}
+                        className="inline-flex min-h-12 w-fit items-center rounded-sm text-sm font-semibold text-primary underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                    >
+                        {showFormLink ? 'Isi lembur' : 'Cek status pengajuan'}
+                    </Link>
                 </div>
             </header>
 

@@ -139,9 +139,9 @@ Simpan datetime sebagai waktu lokal `Asia/Jakarta` (konsisten dengan `APP_TIMEZO
 ## 5. Keamanan
 
 **Form publik**
-- Periksa dan kirim masing-masing memakai kuota 10/menit per IP. Lookup memakai kuota tersendiri 60/menit per IP. Beberapa HP dapat berbagi IP pada Wi-Fi pabrik.
+- Periksa dan kirim masing-masing memakai kuota 10/menit per IP. Lookup karyawan dan cek status masing-masing memakai kuota tersendiri 60/menit per IP. Beberapa HP dapat berbagi IP pada Wi-Fi pabrik.
 - Honeypot field + CSRF.
-- Endpoint karyawan hanya mengembalikan `id`, `nik`, `name` karyawan aktif.
+- Endpoint karyawan hanya mengembalikan `id`, `nik`, `name` karyawan aktif. Cek status mengembalikan riwayat karyawan aktif dalam rentang sampai 60 hari ke belakang, tanpa kegiatan lembur.
 - Halaman sukses memakai signed URL agar nomor pengajuan orang lain tidak bisa ditebak-buka.
 
 **Area login**

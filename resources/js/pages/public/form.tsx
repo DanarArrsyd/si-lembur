@@ -1,11 +1,12 @@
 import { router } from '@inertiajs/react';
 import clsx from 'clsx';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 import { primaryAction } from '@/components/public/action-styles';
 import { ReviewCard } from '@/components/public/review-card';
 import { TimePicker } from '@/components/public/time-picker';
 import { Typeahead } from '@/components/public/typeahead';
+import { useEmployeeLookup } from '@/hooks/use-employee-lookup';
 import PublicLayout from '@/layouts/public-layout';
 import { calculateOvertime, formatDuration, formatHours } from '@/lib/overtime';
 import { breakOptions, timeOptions } from '@/lib/time-options';
@@ -91,50 +92,9 @@ export default function OvertimeForm({
     const requestInFlight = useRef(false);
     const [processing, setProcessing] = useState(false);
     const [requestError, setRequestError] = useState('');
-    const [lookup, setLookup] = useState<{
-        department: number;
-        employees: EmployeeOption[];
-        error?: string;
-    } | null>(null);
-    const [lookupRetry, setLookupRetry] = useState(0);
-    const cache = useRef(new Map<number, EmployeeOption[]>());
-
-    useEffect(() => {
-        if (department === null) return;
-        const cached = cache.current.get(department);
-        if (cached) {
-            setLookup({ department, employees: cached });
-            return;
-        }
-
-        const controller = new AbortController();
-        void (async () => {
-            try {
-                const response = await fetch(
-                    `/api/departments/${department}/employees`,
-                    { signal: controller.signal },
-                );
-                if (!response.ok) throw new Error('Employee lookup failed');
-                const employees = (await response.json()) as EmployeeOption[];
-                if (!controller.signal.aborted) {
-                    cache.current.set(department, employees);
-                    setLookup({ department, employees });
-                }
-            } catch {
-                if (!controller.signal.aborted) {
-                    setLookup({
-                        department,
-                        employees: [],
-                        error: 'Daftar nama gagal dimuat.',
-                    });
-                }
-            }
-        })();
-        return () => controller.abort();
-    }, [department, lookupRetry]);
+    const lookup = useEmployeeLookup(department);
 
     const date = dateChoices.find((choice) => choice.date === selectedDate);
-    const currentLookup = lookup?.department === department ? lookup : null;
     const calculation =
         start && end
             ? calculateOvertime(start, end, rest, maxGrossMinutes)
@@ -296,7 +256,6 @@ export default function OvertimeForm({
                                     : null,
                             );
                             setEmployee(null);
-                            setLookup(null);
                             setErrors((previous) => ({
                                 ...previous,
                                 department_id: undefined,
@@ -321,8 +280,8 @@ export default function OvertimeForm({
                     <Typeahead
                         id="employee_id"
                         departmentId={department}
-                        employees={currentLookup?.employees ?? []}
-                        loading={department !== null && currentLookup === null}
+                        employees={lookup.employees}
+                        loading={lookup.loading}
                         value={employee}
                         onChange={(next) => {
                             setEmployee(next);
@@ -330,10 +289,10 @@ export default function OvertimeForm({
                         }}
                         error={errors.employee_id}
                     />
-                    {currentLookup?.error && (
+                    {lookup.error && (
                         <div className="flex items-center gap-3">
                             <p role="status" className={fieldError}>
-                                {currentLookup.error}
+                                {lookup.error}
                             </p>
                             <button
                                 type="button"
@@ -341,10 +300,7 @@ export default function OvertimeForm({
                                     focusRing,
                                     'min-h-12 px-2 text-sm font-semibold text-primary',
                                 )}
-                                onClick={() => {
-                                    setLookup(null);
-                                    setLookupRetry((count) => count + 1);
-                                }}
+                                onClick={lookup.reload}
                             >
                                 Muat ulang daftar
                             </button>

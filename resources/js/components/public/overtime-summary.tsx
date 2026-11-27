@@ -1,17 +1,11 @@
+import {
+    formatOvertimeDate,
+    formatOvertimeEnd,
+} from '@/lib/format-overtime-date';
 import { formatDuration, formatHours } from '@/lib/overtime';
 import type { OvertimeDetails } from '@/types/public';
 
-const dateFormatter = new Intl.DateTimeFormat('id-ID', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-    timeZone: 'Asia/Jakarta',
-});
-
-const formatDate = (date: string) =>
-    dateFormatter.format(new Date(`${date}T00:00:00+07:00`));
 export function OvertimeSummary({ details }: { details: OvertimeDetails }) {
-    const nextDay = details.end_at.slice(0, 10);
     const rows = [
         { label: 'Departemen', value: details.department },
         {
@@ -30,7 +24,7 @@ export function OvertimeSummary({ details }: { details: OvertimeDetails }) {
             value: (
                 <>
                     <span className="font-mono">
-                        {formatDate(details.date)}
+                        {formatOvertimeDate(details.date)}
                     </span>{' '}
                     ·{' '}
                     {details.day_type === 'HARI_LIBUR'
@@ -46,10 +40,7 @@ export function OvertimeSummary({ details }: { details: OvertimeDetails }) {
         },
         {
             label: 'Jam selesai',
-            value:
-                nextDay === details.date
-                    ? details.end_at.slice(11, 16)
-                    : `${details.end_at.slice(11, 16)} (${formatDate(nextDay)})`,
+            value: formatOvertimeEnd(details.date, details.end_at),
             mono: true,
         },
         {

@@ -38,3 +38,21 @@ export type OvertimeReview = OvertimeDetails & {
     daily_limit_minutes: number;
     weekly_limit_minutes: number;
 };
+
+export type PublicStatusProps = {
+    departments: PublicOvertimeFormProps['departments'];
+    prefillDepartmentId: number | null;
+    prefillEmployee: EmployeeOption | null;
+};
+
+export type StatusEntry = {
+    number: string;
+    date: string;
+    start: string;
+    end: string;
+    total_minutes: number;
+    status: OvertimeStatus;
+    status_label: string;
+    reject_reason: string | null;
+    can_resubmit: boolean;
+};
