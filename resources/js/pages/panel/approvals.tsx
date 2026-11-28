@@ -1,9 +1,9 @@
-import { router } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
 import { useRef, useState } from 'react';
 import { PanelPagination } from '@/components/panel/panel-pagination';
 import { OvertimeList } from '@/components/panel/overtime-list';
 import { OvertimeReasonDialog } from '@/components/panel/overtime-reason-dialog';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import PanelLayout from '@/layouts/panel-layout';
 import type { ApprovalQueue, PanelOvertimeRow } from '@/types/panel-overtime';
 
@@ -100,6 +100,16 @@ function ApprovalPage({
     function renderActions(row: PanelOvertimeRow) {
         return (
             <div className="flex flex-wrap gap-2">
+                <Link
+                    href={'/panel/overtimes/' + row.id + '/edit'}
+                    aria-label={'Edit ' + row.number}
+                    className={buttonVariants({
+                        variant: 'secondary',
+                        size: 'lg',
+                    })}
+                >
+                    Edit
+                </Link>
                 <Button
                     variant="secondary"
                     size="lg"

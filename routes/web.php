@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Controllers\Panel\ApprovalController;
 use App\Http\Controllers\Panel\DashboardController;
+use App\Http\Controllers\Panel\OvertimeFormController as PanelOvertimeFormController;
 use App\Http\Controllers\Panel\OvertimeHistoryController;
 use App\Http\Controllers\Public\EmployeeLookupController;
 use App\Http\Controllers\Public\OvertimeFormController;
@@ -40,6 +41,10 @@ Route::middleware(['auth', 'role:ADMIN,SUPERVISOR'])->prefix('panel')->name('pan
         Route::post('/{overtime}/reject', [ApprovalController::class, 'reject'])->can('reject', 'overtime')->name('reject');
     });
     Route::get('/overtimes', [OvertimeHistoryController::class, 'index'])->name('overtimes.index');
+    Route::get('/overtimes/create', [PanelOvertimeFormController::class, 'create'])->name('overtimes.create');
+    Route::post('/overtimes', [PanelOvertimeFormController::class, 'store'])->name('overtimes.store');
+    Route::get('/overtimes/{overtime}/edit', [PanelOvertimeFormController::class, 'edit'])->can('update', 'overtime')->name('overtimes.edit');
+    Route::patch('/overtimes/{overtime}', [PanelOvertimeFormController::class, 'update'])->can('update', 'overtime')->name('overtimes.update');
     Route::post('/overtimes/{overtime}/cancel-approval', [OvertimeHistoryController::class, 'cancelApproval'])
         ->can('cancelApproval', 'overtime')
         ->name('overtimes.cancel-approval');

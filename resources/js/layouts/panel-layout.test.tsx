@@ -53,13 +53,17 @@ describe('PanelLayout', () => {
             'Dashboard',
             'Persetujuan',
             'Riwayat lembur',
+            'Input atas nama',
         ]);
         expect(links[0]).toHaveAttribute('aria-current', 'page');
 
         expect(
             sidebar().getByRole('link', { name: 'Persetujuan' }),
         ).toHaveAttribute('href', '/panel/approvals');
-        const input = sidebar().getByText('Input atas nama').closest('li');
+        expect(
+            sidebar().getByRole('link', { name: 'Input atas nama' }),
+        ).toHaveAttribute('href', '/panel/overtimes/create');
+        const input = sidebar().getByText('Export Excel').closest('li');
         expect(input).toHaveAttribute('aria-disabled', 'true');
         expect(input).toHaveTextContent('Segera');
     });

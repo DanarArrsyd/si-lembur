@@ -40,7 +40,12 @@ export const navItems: NavItem[] = [
         roles: both,
         href: '/panel/overtimes',
     },
-    { label: 'Input atas nama', icon: UserPen, roles: both },
+    {
+        label: 'Input atas nama',
+        icon: UserPen,
+        roles: both,
+        href: '/panel/overtimes/create',
+    },
     { label: 'Export Excel', icon: FileSpreadsheet, roles: both },
     { label: 'Karyawan', icon: Users, roles: admin },
     { label: 'Departemen', icon: Warehouse, roles: admin },

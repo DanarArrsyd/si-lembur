@@ -1,10 +1,10 @@
-import { router } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
 import { useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 import { OvertimeList } from '@/components/panel/overtime-list';
 import { OvertimeReasonDialog } from '@/components/panel/overtime-reason-dialog';
 import { PanelPagination } from '@/components/panel/panel-pagination';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import PanelLayout from '@/layouts/panel-layout';
 import { formatOvertimeDate } from '@/lib/format-overtime-date';
 import type {
@@ -83,6 +83,19 @@ export default function OvertimeHistory({
     }
 
     function actions(row: OvertimeHistoryRow) {
+        if (row.status === 'PENDING')
+            return (
+                <Link
+                    href={'/panel/overtimes/' + row.id + '/edit'}
+                    aria-label={'Edit ' + row.number}
+                    className={buttonVariants({
+                        variant: 'secondary',
+                        size: 'lg',
+                    })}
+                >
+                    Edit
+                </Link>
+            );
         if (row.status !== 'APPROVED') return null;
         if (!row.can_cancel_approval) {
             return <p className="text-xs text-ink-muted">{outsideWindow}</p>;
