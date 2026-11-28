@@ -33,16 +33,16 @@ function LimitFlags({ row }: { row: PanelOvertimeRow }) {
     );
 }
 
-export function OvertimeList({
+export function OvertimeList<Row extends PanelOvertimeRow>({
     rows,
     label,
     renderSelection,
     renderActions,
 }: {
-    rows: PanelOvertimeRow[];
+    rows: Row[];
     label: string;
-    renderSelection?: (row: PanelOvertimeRow) => ReactNode;
-    renderActions?: (row: PanelOvertimeRow) => ReactNode;
+    renderSelection?: (row: Row) => ReactNode;
+    renderActions?: (row: Row) => ReactNode;
 }) {
     return (
         <>

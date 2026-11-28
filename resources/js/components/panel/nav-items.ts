@@ -34,7 +34,12 @@ export const navItems: NavItem[] = [
         roles: both,
         href: '/panel/approvals',
     },
-    { label: 'Riwayat lembur', icon: History, roles: both },
+    {
+        label: 'Riwayat lembur',
+        icon: History,
+        roles: both,
+        href: '/panel/overtimes',
+    },
     { label: 'Input atas nama', icon: UserPen, roles: both },
     { label: 'Export Excel', icon: FileSpreadsheet, roles: both },
     { label: 'Karyawan', icon: Users, roles: admin },

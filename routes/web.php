@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Controllers\Panel\ApprovalController;
 use App\Http\Controllers\Panel\DashboardController;
+use App\Http\Controllers\Panel\OvertimeHistoryController;
 use App\Http\Controllers\Public\EmployeeLookupController;
 use App\Http\Controllers\Public\OvertimeFormController;
 use App\Http\Controllers\Public\StatusCheckController;
@@ -38,6 +39,10 @@ Route::middleware(['auth', 'role:ADMIN,SUPERVISOR'])->prefix('panel')->name('pan
         Route::post('/{overtime}/approve', [ApprovalController::class, 'approve'])->can('approve', 'overtime')->name('approve');
         Route::post('/{overtime}/reject', [ApprovalController::class, 'reject'])->can('reject', 'overtime')->name('reject');
     });
+    Route::get('/overtimes', [OvertimeHistoryController::class, 'index'])->name('overtimes.index');
+    Route::post('/overtimes/{overtime}/cancel-approval', [OvertimeHistoryController::class, 'cancelApproval'])
+        ->can('cancelApproval', 'overtime')
+        ->name('overtimes.cancel-approval');
 });
 
 require __DIR__.'/auth.php';

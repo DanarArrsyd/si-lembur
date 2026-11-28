@@ -52,15 +52,16 @@ describe('PanelLayout', () => {
         expect(links.map((a) => a.textContent)).toEqual([
             'Dashboard',
             'Persetujuan',
+            'Riwayat lembur',
         ]);
         expect(links[0]).toHaveAttribute('aria-current', 'page');
 
         expect(
             sidebar().getByRole('link', { name: 'Persetujuan' }),
         ).toHaveAttribute('href', '/panel/approvals');
-        const history = sidebar().getByText('Riwayat lembur').closest('li');
-        expect(history).toHaveAttribute('aria-disabled', 'true');
-        expect(history).toHaveTextContent('Segera');
+        const input = sidebar().getByText('Input atas nama').closest('li');
+        expect(input).toHaveAttribute('aria-disabled', 'true');
+        expect(input).toHaveTextContent('Segera');
     });
 
     it('renders the page title, user and logout in the top bar', () => {

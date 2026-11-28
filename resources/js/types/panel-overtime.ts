@@ -28,11 +28,32 @@ export type DashboardProps = {
     approvalsUrl: string | null;
 };
 
-export type ApprovalQueue = {
-    data: PanelOvertimeRow[];
-    current_page: number;
-    last_page: number;
-    next_page_url: string | null;
-    prev_page_url: string | null;
-    total: number;
+export type PanelOvertimePage<Row extends PanelOvertimeRow = PanelOvertimeRow> =
+    {
+        data: Row[];
+        current_page: number;
+        last_page: number;
+        next_page_url: string | null;
+        prev_page_url: string | null;
+        total: number;
+    };
+
+export type ApprovalQueue = PanelOvertimePage;
+
+export type HistoryFilters = {
+    month: string;
+    status: OvertimeStatus | null;
+    employee_id: number | null;
+};
+
+export type OvertimeHistoryRow = PanelOvertimeRow & {
+    can_cancel_approval: boolean;
+};
+
+export type OvertimeHistoryProps = {
+    history: PanelOvertimePage<OvertimeHistoryRow>;
+    filters: HistoryFilters;
+    employees: EmployeeOption[];
+    cancellationWindow: { min: string; max: string };
+    errors?: { status?: string; overtime_date?: string };
 };

@@ -265,13 +265,15 @@ class OvertimeWorkflow
      * @throws AuthorizationException
      * @throws ValidationException
      */
-    public function cancelApproval(User $actor, Overtime $overtime, string $reason): Overtime
+    public function cancelApproval(User $actor, Overtime $overtime, string $reason, ?CarbonImmutable $now = null): Overtime
     {
         Gate::forUser($actor)->authorize('cancelApproval', $overtime);
         $reason = $this->validReason($reason);
+        $now ??= CarbonImmutable::now();
 
-        return DB::transaction(function () use ($actor, $overtime, $reason) {
+        return DB::transaction(function () use ($actor, $overtime, $reason, $now) {
             $overtime = $this->lockOvertime($overtime, OvertimeStatus::APPROVED);
+            $this->dateRule->assertPanelDate($overtime->overtime_date->toImmutable(), $now);
             $before = $this->snapshot($overtime);
 
             $overtime->fill([
@@ -282,7 +284,7 @@ class OvertimeWorkflow
 
             $this->limits->recalculateWeek($overtime->employee_id, $overtime->overtime_date->toImmutable());
 
-            $this->audit->log('overtime.approval_cancelled', $overtime, $before, $this->snapshot($overtime), $reason, $actor);
+            $this->audit->log('overtime.approval_cancelled', $overtime, $before, $this->snapshot($overtime), $reason, $actor, $now);
 
             return $overtime;
         }, self::ATTEMPTS);

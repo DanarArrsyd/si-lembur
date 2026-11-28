@@ -1,5 +1,6 @@
-import { Link, router } from '@inertiajs/react';
+import { router } from '@inertiajs/react';
 import { useRef, useState } from 'react';
+import { PanelPagination } from '@/components/panel/panel-pagination';
 import { OvertimeList } from '@/components/panel/overtime-list';
 import { OvertimeReasonDialog } from '@/components/panel/overtime-reason-dialog';
 import { Button } from '@/components/ui/button';
@@ -205,39 +206,18 @@ function ApprovalPage({
                 </>
             )}
 
-            {queue.last_page > 1 && (
-                <nav
-                    aria-label="Halaman persetujuan"
-                    className="flex flex-wrap items-center justify-between gap-2"
-                >
-                    <p className="text-sm text-ink-muted">
-                        Halaman {queue.current_page} dari {queue.last_page}
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                        {queue.prev_page_url && !processing && (
-                            <Button variant="secondary" size="lg" asChild>
-                                <Link href={queue.prev_page_url}>
-                                    Sebelumnya
-                                </Link>
-                            </Button>
-                        )}
-                        {queue.next_page_url && !processing && (
-                            <Button variant="secondary" size="lg" asChild>
-                                <Link href={queue.next_page_url}>
-                                    Berikutnya
-                                </Link>
-                            </Button>
-                        )}
-                    </div>
-                </nav>
-            )}
+            <PanelPagination
+                page={queue}
+                label="Halaman persetujuan"
+                busy={processing}
+            />
 
             {rejecting && (
                 <OvertimeReasonDialog
                     row={rejecting}
                     busy={processing}
                     serverError={reasonError}
-                    onReject={(reason) =>
+                    onSubmit={(reason) =>
                         submit(`${rejecting.id}/reject`, { reason })
                     }
                     onClose={() => setRejecting(null)}

@@ -11,16 +11,18 @@ import type { PanelOvertimeRow } from '@/types/panel-overtime';
 
 export function OvertimeReasonDialog({
     row,
+    action = 'reject',
     busy,
     serverError,
-    onReject,
+    onSubmit,
     onClose,
     restoreFocus,
 }: {
     row: PanelOvertimeRow;
+    action?: 'reject' | 'cancel-approval';
     busy: boolean;
     serverError?: string;
-    onReject: (reason: string) => void;
+    onSubmit: (reason: string) => void;
     onClose: () => void;
     restoreFocus: () => void;
 }) {
@@ -28,6 +30,8 @@ export function OvertimeReasonDialog({
     const [localError, setLocalError] = useState('');
     const [edited, setEdited] = useState(false);
     const id = useId();
+    const cancelling = action === 'cancel-approval';
+    const title = cancelling ? 'Batalkan persetujuan' : 'Tolak pengajuan';
     const error = localError || (!edited ? serverError : undefined);
 
     function submit(event: FormEvent<HTMLFormElement>) {
@@ -46,7 +50,7 @@ export function OvertimeReasonDialog({
 
         setLocalError('');
         setEdited(false);
-        onReject(value);
+        onSubmit(value);
     }
 
     return (
@@ -69,11 +73,12 @@ export function OvertimeReasonDialog({
                     if (busy) event.preventDefault();
                 }}
             >
-                <DialogTitle>Tolak pengajuan</DialogTitle>
+                <DialogTitle>{title}</DialogTitle>
                 <DialogDescription>
-                    Pengajuan {row.number} atas nama {row.employee.name} akan
-                    ditolak. Karyawan dapat mengajukan ulang jika tanggal lembur
-                    masih tersedia di form.
+                    Pengajuan {row.number} atas nama {row.employee.name}.{' '}
+                    {cancelling
+                        ? 'Pengajuan kembali ke status Menunggu dan keluar dari rekap sampai disetujui lagi.'
+                        : 'Pengajuan ini akan ditolak. Karyawan dapat mengajukan ulang jika tanggal lembur masih tersedia di form.'}
                 </DialogDescription>
                 <form onSubmit={submit} className="grid gap-3" noValidate>
                     <div className="grid gap-2">
@@ -81,11 +86,14 @@ export function OvertimeReasonDialog({
                             htmlFor={id}
                             className="text-sm font-semibold text-ink"
                         >
-                            Alasan penolakan
+                            {cancelling
+                                ? 'Alasan pembatalan'
+                                : 'Alasan penolakan'}
                         </label>
                         <p id={`${id}-help`} className="text-sm text-ink-muted">
-                            Alasan tampil di Cek status. Hindari informasi
-                            pribadi.
+                            {cancelling
+                                ? 'Alasan pembatalan tersimpan di audit.'
+                                : 'Alasan tampil di Cek status. Hindari informasi pribadi.'}
                         </p>
                         <textarea
                             id={id}
@@ -129,7 +137,7 @@ export function OvertimeReasonDialog({
                             size="lg"
                             disabled={busy}
                         >
-                            {busy ? 'Mengirim…' : 'Tolak pengajuan'}
+                            {busy ? 'Mengirim…' : title}
                         </Button>
                     </div>
                 </form>

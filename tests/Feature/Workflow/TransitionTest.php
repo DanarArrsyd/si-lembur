@@ -54,7 +54,9 @@ it('rejects with a required reason and allows resubmission (PRD §8 #7)', functi
 it('cancels an approval back to pending with a reason (PRD §8 #8)', function () {
     workflow()->approve($this->supervisor, $this->overtime);
 
-    $pending = workflow()->cancelApproval($this->supervisor, $this->overtime->fresh(), 'Salah jam selesai');
+    $pending = workflow()->cancelApproval(
+        $this->supervisor, $this->overtime->fresh(), 'Salah jam selesai', CarbonImmutable::parse('2026-11-20 12:00'),
+    );
 
     expect($pending)
         ->status->toBe(OvertimeStatus::PENDING)

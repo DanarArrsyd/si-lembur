@@ -51,6 +51,12 @@ class OvertimeDateRule
         return $choice === DateChoice::TODAY ? $now->startOfDay() : $now->subDay()->startOfDay();
     }
 
+    /** @return array{min: CarbonImmutable, max: CarbonImmutable} */
+    public function panelDateBounds(CarbonImmutable $now): array
+    {
+        return ['min' => $now->startOfMonth()->subMonthNoOverflow(), 'max' => $now->startOfDay()];
+    }
+
     /**
      * Input Supervisor/Admin: tanggal mundur sampai awal bulan sebelumnya, tidak boleh maju.
      *
@@ -59,12 +65,13 @@ class OvertimeDateRule
     public function assertPanelDate(CarbonImmutable $date, CarbonImmutable $now): void
     {
         $day = $date->startOfDay();
+        $bounds = $this->panelDateBounds($now);
 
-        if ($day->greaterThan($now->startOfDay())) {
+        if ($day->greaterThan($bounds['max'])) {
             throw ValidationException::withMessages(['overtime_date' => 'Tanggal lembur tidak boleh melewati hari ini.']);
         }
 
-        if ($day->lessThan($now->startOfMonth()->subMonthNoOverflow())) {
+        if ($day->lessThan($bounds['min'])) {
             throw ValidationException::withMessages(['overtime_date' => 'Tanggal lembur hanya bisa di bulan ini atau bulan sebelumnya.']);
         }
     }
