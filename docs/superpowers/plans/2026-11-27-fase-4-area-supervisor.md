@@ -84,11 +84,13 @@ Build produksi dan `composer ci:check` lulus. Sebanyak 55 tes antrean dan workfl
 
 ### Task 4 — Riwayat dan batalkan persetujuan
 
-- [ ] Buat `tests/Feature/Panel/OvertimeHistoryTest.php`. Assert filter bulan, status, dan karyawan bekerja bersama, pengajuan dari departemen lain tetap tertutup, Admin berwenang lintas departemen, dan lembur lintas tengah malam memakai tanggal mulai. Uji alasan wajib, audit pembatalan, batas awal bulan sebelumnya inklusif, dan pengajuan yang sehari lebih tua tetap Disetujui.
-- [ ] Jalankan tes sampai gagal pada rute dan batas pembatalan yang belum ada.
-- [ ] Pakai query panel dan filter secara gabungan. Bulan default adalah bulan server saat ini. Pilihan karyawan pada riwayat berasal dari pengajuan yang terlihat agar riwayat karyawan pindah tetap dapat ditemukan. Pada pembatalan, setelah Policy dan lock, pakai aturan tanggal panel yang sama untuk tanggal mulai lembur. Teruskan jam server dengan kontrak parameter terakhir opsional seperti Task 3. Audit perubahan dan kosongkan informasi persetujuan melalui workflow.
-- [ ] Tampilkan riwayat semua status, aksi Batalkan persetujuan untuk pengajuan yang memenuhi jendela, dan alasan jika aksinya tidak tersedia. Uji hasil filter serta pesan konsekuensi koreksi pada browser.
-- [ ] Jalankan tes riwayat dan workflow, lalu `composer ci:check`. Commit `feat(panel): show history and undo approvals`.
+- [x] Buat `tests/Feature/Panel/OvertimeHistoryTest.php`. Assert filter bulan, status, dan karyawan bekerja bersama, pengajuan dari departemen lain tetap tertutup, Admin berwenang lintas departemen, dan lembur lintas tengah malam memakai tanggal mulai. Uji alasan wajib, audit pembatalan, batas awal bulan sebelumnya inklusif, dan pengajuan yang sehari lebih tua tetap Disetujui.
+- [x] Jalankan tes sampai gagal pada rute dan batas pembatalan yang belum ada.
+- [x] Pakai query panel dan filter secara gabungan. Bulan default adalah bulan server saat ini. Pilihan karyawan pada riwayat berasal dari pengajuan yang terlihat agar riwayat karyawan pindah tetap dapat ditemukan. Pada pembatalan, setelah Policy dan lock, pakai aturan tanggal panel yang sama untuk tanggal mulai lembur. Teruskan jam server dengan kontrak parameter terakhir opsional seperti Task 3. Audit perubahan dan kosongkan informasi persetujuan melalui workflow.
+- [x] Tampilkan riwayat semua status, aksi Batalkan persetujuan untuk pengajuan yang memenuhi jendela, dan alasan jika aksinya tidak tersedia. Uji hasil filter serta pesan konsekuensi koreksi pada browser.
+- [x] Jalankan tes riwayat dan workflow, lalu `composer ci:check`. Commit `feat(panel): show history and undo approvals`.
+
+Commit: `0acce31`. Build produksi dan `composer ci:check` lulus (229 Pest, 73 Vitest, 2 tes khusus MySQL dilewati di SQLite). MySQL 8 lulus 47 tes riwayat dan workflow. Uji Chromium pada 360 px dan 1280 px lulus untuk filter gabungan, pembatalan dengan alasan, perubahan status, dan batas tanggal.
 
 ### Task 5 — Input atas nama dan edit
 

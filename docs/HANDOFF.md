@@ -4,7 +4,7 @@ Untuk agent AI mana pun (Claude Code, Codex, Cursor, dll.) yang melanjutkan peke
 
 **Perbarui file ini di akhir setiap task** (status, commit, langkah berikutnya). Bila isi file ini berbeda dengan checkbox di rencana fase atau `docs/ROADMAP.md`, yang benar adalah checkbox + `git log`.
 
-Terakhir diperbarui: 2026-11-28, setelah Fase 4 Task 3.
+Terakhir diperbarui: 2026-11-28, setelah Fase 4 Task 4.
 
 ## Posisi sekarang
 
@@ -13,7 +13,7 @@ Terakhir diperbarui: 2026-11-28, setelah Fase 4 Task 3.
 | 1 Fondasi | Selesai |
 | 2 Logika inti | Selesai |
 | 3 Form publik + cek status | Selesai |
-| 4 Area supervisor | Berjalan. Task 1–3 selesai, berikutnya Task 4. |
+| 4 Area supervisor | Berjalan. Task 1–4 selesai, berikutnya Task 5. |
 | 5–7 | Belum mulai |
 
 Rencana Fase 3: `docs/superpowers/plans/2026-11-27-fase-3-form-publik.md`. Disetujui pemilik proyek pada 2026-11-27, termasuk delapan keputusan di bagian "Keputusan". Rencana Fase 4 disetujui pada 2026-11-27 dan tersedia di `docs/superpowers/plans/2026-11-27-fase-4-area-supervisor.md`.
@@ -41,8 +41,8 @@ Verifikasi Task 8: build produksi dan `composer ci:check` lulus lokal. Pest lulu
 | 1 | Login dan audit | Selesai | `2c4e78c` |
 | 2 | Dashboard dan scope pembacaan | Selesai | `7f44c82` |
 | 3 | Antrean, setujui, dan tolak | Selesai | `dc548e7` |
-| 4 | Riwayat dan batalkan persetujuan | Berikutnya | – |
-| 5 | Input atas nama dan edit | Belum | – |
+| 4 | Riwayat dan batalkan persetujuan | Selesai | `0acce31` |
+| 5 | Input atas nama dan edit | Berikutnya | – |
 | 6 | Verifikasi dan penutupan | Belum | – |
 
 Verifikasi Task 1: build produksi dan `composer ci:check` lulus lokal. Pest 206 lulus dan dua tes konkurensi dilewati di SQLite. Vitest 68 lulus. Browser 360 dan 1280 px menampilkan pemberitahuan pada sesi yang berakhir setelah penonaktifan. Login aktif berhasil, login ulang untuk akun nonaktif ditolak, dan data audit uji mencatat satu keberhasilan serta dua kegagalan.
@@ -51,9 +51,13 @@ Verifikasi Task 2: build produksi dan `composer ci:check` lulus lokal. Pest 209 
 
 Verifikasi Task 3: build produksi dan `composer ci:check` lulus lokal. Pest 223 lulus, dua tes konkurensi khusus MySQL dilewati di SQLite, dan Vitest 72 lulus. Di MySQL 8, 55 tes antrean dan workflow lulus. Browser 360 px dan 1280 px mengonfirmasi setujui tunggal, setujui massal, tolak, reset pilihan saat pindah halaman, dan toast setelah kembali dari halaman terakhir yang kosong.
 
-## Hal yang perlu diketahui sebelum Fase 4 Task 4
+Verifikasi Task 4: build produksi dan `composer ci:check` lulus lokal. Pest 229 lulus, dua tes konkurensi khusus MySQL dilewati di SQLite, dan Vitest 73 lulus. Di MySQL 8, 47 tes riwayat dan workflow lulus. Browser 360 px dan 1280 px mengonfirmasi filter gabungan, pembatalan dengan alasan, status kembali Menunggu dengan filter tetap terpasang, serta batas pembatalan.
 
-- **Persetujuan** aktif di `/panel/approvals` dari dashboard dan sidebar. Pilihan massal berlaku per halaman, maksimal 25 ID. Workflow memeriksa Policy untuk semua ID sebelum memeriksa status, dengan transaksi untuk seluruh batch. `OvertimeReasonRequest` dan `AuditLogger` mendukung validasi alasan dan audit untuk Task 4. Tautan Edit dari antrean dijadwalkan di Task 5.
+## Hal yang perlu diketahui sebelum Fase 4 Task 5
+
+- **Riwayat** aktif di `/panel/overtimes`. Filter memakai tanggal mulai lembur dan departemen tersimpan saat pengajuan. Form edit dapat memakai `OvertimeDateRule::panelDateBounds()` untuk batas tanggal. Riwayat dan antrean memakai ulang `OvertimeList`, `PanelPagination`, dan `OvertimeReasonDialog`.
+
+- **Persetujuan** aktif di `/panel/approvals` dari dashboard dan sidebar. Pilihan massal berlaku per halaman, maksimal 25 ID. Workflow memeriksa Policy untuk semua ID sebelum memeriksa status, dengan transaksi untuk seluruh batch. `OvertimeReasonRequest` dan `AuditLogger` mendukung validasi alasan dan audit untuk penolakan dan pembatalan. Tautan Edit dari antrean dijadwalkan di Task 5.
 
 - **Dashboard** memakai `PanelOvertimeQuery::visibleTo()` untuk scope snapshot departemen dan `row()` untuk payload `PanelOvertimeRow`. `OvertimeList` menampilkan kartu di bawah 640 px dan tabel pada layar lebih lebar. Rute antrean bernama `panel.approvals.index`.
 
