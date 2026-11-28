@@ -94,11 +94,13 @@ Commit: `0acce31`. Build produksi dan `composer ci:check` lulus (229 Pest, 73 Vi
 
 ### Task 5 — Input atas nama dan edit
 
-- [ ] Buat `tests/Feature/Panel/OvertimeFormTest.php`. Uji input sah langsung Disetujui dengan sumber `SUPERVISOR`, tanggal mundur sesuai jendela, tanggal maju ditolak, karyawan beda departemen atau nonaktif ditolak, dan Supervisor mendapat 403 untuk GET/PATCH pengajuan departemen lain. Uji bahwa ID karyawan/departemen historis tidak bisa ditukar serta edit memvalidasi ulang overlap dan menghitung flag minggu lama dan baru.
-- [ ] Jalankan tes sampai gagal pada rute yang belum ada.
-- [ ] Tambahkan form dan Form Request. Saat create, Supervisor menggunakan departemen akunnya, dan Admin memilih departemen sebelum memilih karyawan aktif. Saat edit, muat pengajuan melalui Policy dan tampilkan identitas historis sebagai baca-saja. Ambil ID historis dari model di server. `SaveOvertimeRequest` menerima tanggal ISO, waktu `HH:mm`, menit istirahat, dan kegiatan. Teruskan ke `submitBySupervisor()` atau `update()` dengan satu jam server.
-- [ ] Pakai ulang picker, pemilih karyawan, dan perhitungan preview yang kompatibel. Tambah tes Vitest di `resources/js/test/panel-overtime-form.test.tsx` untuk jam lintas tengah malam dan field historis baca-saja. Aktifkan navigasi dan tautan Edit dari riwayat dan antrean.
-- [ ] Jalankan tes form dan workflow, lalu `composer ci:check`. Commit `feat(panel): add proxy entry and overtime edits`.
+- [x] Buat `tests/Feature/Panel/OvertimeFormTest.php`. Uji input sah langsung Disetujui dengan sumber `SUPERVISOR`, tanggal mundur sesuai jendela, tanggal maju ditolak, karyawan beda departemen atau nonaktif ditolak, dan Supervisor mendapat 403 untuk GET/PATCH pengajuan departemen lain. Uji bahwa ID karyawan/departemen historis tidak bisa ditukar serta edit memvalidasi ulang overlap dan menghitung flag minggu lama dan baru.
+- [x] Jalankan tes sampai gagal pada rute yang belum ada.
+- [x] Tambahkan form dan Form Request. Saat create, Supervisor menggunakan departemen akunnya, dan Admin memilih departemen sebelum memilih karyawan aktif. Saat edit, muat pengajuan melalui Policy dan tampilkan identitas historis sebagai baca-saja. Ambil ID historis dari model di server. `SaveOvertimeRequest` menerima tanggal ISO, waktu `HH:mm`, menit istirahat, dan kegiatan. Teruskan ke `submitBySupervisor()` atau `update()` dengan satu jam server.
+- [x] Pakai ulang picker, pemilih karyawan, dan perhitungan preview yang kompatibel. Tambah tes Vitest di `resources/js/test/panel-overtime-form.test.tsx` untuk jam lintas tengah malam dan field historis baca-saja. Aktifkan navigasi dan tautan Edit dari riwayat dan antrean.
+- [x] Jalankan tes form dan workflow, lalu `composer ci:check`. Commit `feat(panel): add proxy entry and overtime edits`.
+
+Commit: `bdb697e`. Build produksi dan `composer ci:check` lulus (238 Pest, 76 Vitest, 2 tes khusus MySQL dilewati di SQLite). MySQL 8 lulus 50 tes form dan workflow. Uji Chromium pada 360 px dan 1280 px mengonfirmasi validasi, input lintas tengah malam, pemilihan departemen, dan hasil edit yang tersimpan.
 
 ### Task 6 — Verifikasi dan penutupan
 
