@@ -324,7 +324,7 @@ function OvertimeFormPage(props: Props) {
                         {calculation?.ok ? (
                             <>
                                 <p className="flex flex-wrap items-baseline gap-x-2 font-mono tabular-nums">
-                                    <span className="text-xl font-semibold text-primary">
+                                    <span className="text-xl font-semibold text-primary-hover">
                                         {formatDuration(
                                             calculation.totalMinutes,
                                         )}

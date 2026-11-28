@@ -87,6 +87,9 @@ it('asks for a public-safe reason and submits a trimmed rejection', async () => 
     expect(
         within(dialog).getByText(/Alasan tampil di Cek status/),
     ).toBeInTheDocument();
+    expect(
+        within(dialog).getByRole('link', { name: 'Edit pengajuan' }),
+    ).toHaveAttribute('href', '/panel/overtimes/1/edit');
     const submit = within(dialog).getByRole('button', {
         name: 'Tolak pengajuan',
     });

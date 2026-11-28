@@ -1,3 +1,4 @@
+import { Link } from '@inertiajs/react';
 import { useId, useState } from 'react';
 import type { FormEvent } from 'react';
 import { Button } from '@/components/ui/button';
@@ -76,9 +77,25 @@ export function OvertimeReasonDialog({
                 <DialogTitle>{title}</DialogTitle>
                 <DialogDescription>
                     Pengajuan {row.number} atas nama {row.employee.name}.{' '}
-                    {cancelling
-                        ? 'Pengajuan kembali ke status Menunggu dan keluar dari rekap sampai disetujui lagi.'
-                        : 'Pengajuan ini akan ditolak. Karyawan dapat mengajukan ulang jika tanggal lembur masih tersedia di form.'}
+                    {cancelling ? (
+                        'Pengajuan kembali ke status Menunggu dan keluar dari rekap sampai disetujui lagi.'
+                    ) : (
+                        <>
+                            Karyawan dapat mengajukan ulang jika tanggal lembur
+                            masih tersedia di form.{' '}
+                            <Link
+                                href={'/panel/overtimes/' + row.id + '/edit'}
+                                className="font-semibold text-primary-hover underline underline-offset-2"
+                                aria-disabled={busy}
+                                onClick={(event) => {
+                                    if (busy) event.preventDefault();
+                                }}
+                            >
+                                Edit pengajuan
+                            </Link>{' '}
+                            jika yang perlu diperbaiki hanya jam atau kegiatan.
+                        </>
+                    )}
                 </DialogDescription>
                 <form onSubmit={submit} className="grid gap-3" noValidate>
                     <div className="grid gap-2">
