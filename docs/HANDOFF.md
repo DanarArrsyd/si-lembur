@@ -4,7 +4,7 @@ Untuk agent AI mana pun (Claude Code, Codex, Cursor, dll.) yang melanjutkan peke
 
 **Perbarui file ini di akhir setiap task** (status, commit, langkah berikutnya). Bila isi file ini berbeda dengan checkbox di rencana fase atau `docs/ROADMAP.md`, yang benar adalah checkbox + `git log`.
 
-Terakhir diperbarui: 2026-11-28, setelah Fase 4 Task 5.
+Terakhir diperbarui: 2026-11-28, setelah penutupan Fase 4.
 
 ## Posisi sekarang
 
@@ -13,8 +13,9 @@ Terakhir diperbarui: 2026-11-28, setelah Fase 4 Task 5.
 | 1 Fondasi | Selesai |
 | 2 Logika inti | Selesai |
 | 3 Form publik + cek status | Selesai |
-| 4 Area supervisor | Berjalan. Task 1–5 selesai, berikutnya Task 6. |
-| 5–7 | Belum mulai |
+| 4 Area supervisor | Selesai. Task 1–6 lulus, sudah di-push ke `main`. |
+| 5 Area admin | Belum mulai. Rencana fase menunggu persetujuan pemilik proyek. |
+| 6–7 | Belum mulai |
 
 Rencana Fase 3: `docs/superpowers/plans/2026-11-27-fase-3-form-publik.md`. Disetujui pemilik proyek pada 2026-11-27, termasuk delapan keputusan di bagian "Keputusan". Rencana Fase 4 disetujui pada 2026-11-27 dan tersedia di `docs/superpowers/plans/2026-11-27-fase-4-area-supervisor.md`.
 
@@ -43,7 +44,7 @@ Verifikasi Task 8: build produksi dan `composer ci:check` lulus lokal. Pest lulu
 | 3 | Antrean, setujui, dan tolak | Selesai | `dc548e7` |
 | 4 | Riwayat dan batalkan persetujuan | Selesai | `0acce31` |
 | 5 | Input atas nama dan edit | Selesai | `bdb697e` |
-| 6 | Verifikasi dan penutupan | Berikutnya | – |
+| 6 | Verifikasi dan penutupan | Selesai | `4f91596` |
 
 Verifikasi Task 1: build produksi dan `composer ci:check` lulus lokal. Pest 206 lulus dan dua tes konkurensi dilewati di SQLite. Vitest 68 lulus. Browser 360 dan 1280 px menampilkan pemberitahuan pada sesi yang berakhir setelah penonaktifan. Login aktif berhasil, login ulang untuk akun nonaktif ditolak, dan data audit uji mencatat satu keberhasilan serta dua kegagalan.
 
@@ -55,7 +56,11 @@ Verifikasi Task 4: build produksi dan `composer ci:check` lulus lokal. Pest 229 
 
 Verifikasi Task 5: build produksi dan `composer ci:check` lulus lokal. Pest 238 lulus dan dua tes konkurensi khusus MySQL dilewati di SQLite. Vitest 76 lulus. Di MySQL 8, 50 tes form dan workflow lulus. Browser 360 px mengonfirmasi validasi, input lintas tengah malam, dan edit dari antrean. Browser 1280 px mengonfirmasi pemilihan departemen Admin dan hasil edit yang tersimpan.
 
-## Hal yang perlu diketahui sebelum Fase 4 Task 6
+Verifikasi Task 6: build produksi dan `composer ci:check` lulus. Pest lulus 240 tes di MySQL 8.0.46, termasuk dua tes konkurensi, dan 238 di SQLite. Vitest lulus 76 tes. Browser mengonfirmasi dashboard, scope departemen, persetujuan tunggal dan massal, riwayat dan filter, pembatalan, edit, penolakan, dan input atas nama. Lebar yang diperiksa 360, 412, dan 1280 px. Audit axe tidak menemukan pelanggaran pada dashboard Supervisor, dialog penolakan, form Admin, dan riwayat Admin. Lighthouse mobile Performance dan Accessibility masing-masing 100 untuk form publik, Cek status, dan Cek status berisi riwayat. [GitHub Actions commit kode Fase 4](https://github.com/DanarArrsyd/si-lembur/actions/runs/46108947447) lulus untuk job `ci` dan `mysql`.
+
+Review akhir menambahkan tautan Edit dari dialog penolakan dan memperbaiki kontras tampilan total menit. Setelah pengajuan baru dicatat atau pengajuan Menunggu diedit, panel menampilkan hasil pada riwayat bulan dan status terkait.
+
+## Hal yang perlu diketahui sebelum Fase 5
 
 - **Input atas nama** aktif di `/panel/overtimes/create`. Supervisor memakai departemen akun dan Admin memilih departemen. Pengajuan langsung Disetujui. Tautan **Edit** ada di antrean dan riwayat untuk pengajuan Menunggu. Nama, NIK, dan departemen pengajuan tampil baca-saja.
 

@@ -104,7 +104,17 @@ Commit: `bdb697e`. Build produksi dan `composer ci:check` lulus (238 Pest, 76 Vi
 
 ### Task 6 — Verifikasi dan penutupan
 
-- [ ] Jalankan build produksi, `composer ci:check`, dan suite terpisah pada MySQL 8. Pastikan tidak ada tes gagal dan kedua tes konkurensi berjalan di MySQL.
-- [ ] Uji browser pada 360 dan 1280 px untuk login Supervisor dan Admin, dashboard, aksi tunggal dan bulk, riwayat, pembatalan, input atas nama, serta edit. Cek kontrol keyboard, pesan error, kontras, dan kartu mobile. Ukur ulang Lighthouse mobile untuk form publik dan Cek status sebagai cek regresi Fase 3.
-- [ ] Review diff fase dengan `caveman-review` dan catat snapshot `caveman-stats`. Cocokkan seluruh acceptance criteria Fase 4 dengan bukti tes. Perbarui Roadmap dan Handoff.
-- [ ] Push ke GitHub, verifikasi job SQLite dan MySQL hijau, lalu laporkan hasil fase. Mulai Fase 5 setelah konfirmasi pemilik proyek.
+- [x] Jalankan build produksi, `composer ci:check`, dan suite terpisah pada MySQL 8. Pastikan tidak ada tes gagal dan kedua tes konkurensi berjalan di MySQL.
+- [x] Uji browser pada 360 dan 1280 px untuk login Supervisor dan Admin, dashboard, aksi tunggal dan bulk, riwayat, pembatalan, input atas nama, serta edit. Cek kontrol keyboard, pesan error, kontras, dan kartu mobile. Ukur ulang Lighthouse mobile untuk form publik dan Cek status sebagai cek regresi Fase 3.
+- [x] Review diff fase dengan `caveman-review` dan catat snapshot `caveman-stats`. Cocokkan seluruh acceptance criteria Fase 4 dengan bukti tes. Perbarui Roadmap dan Handoff.
+- [x] Push ke GitHub, verifikasi job SQLite dan MySQL hijau, lalu laporkan hasil fase. Mulai Fase 5 setelah konfirmasi pemilik proyek.
+
+Bukti penutupan lokal:
+
+- Build produksi dan `composer ci:check` lulus. Pest SQLite 238 lulus dan 2 dilewati, MySQL 8.0.46 240 lulus termasuk kedua tes konkurensi, Vitest 76 lulus.
+- Browser 360 px mengonfirmasi alur Supervisor dari antrean sampai koreksi, penolakan, serta persetujuan massal. Browser 1280 px mengonfirmasi alur Admin lintas departemen sampai input atas nama. Riwayat Admin 412 px juga diperiksa. Fokus kembali ke tombol pemicu setelah dialog ditutup dengan Escape. Tautan Edit dari dialog dapat diaktifkan dengan keyboard.
+- Lighthouse mobile (Performance/Accessibility) mencatat 100/100 untuk `/`, `/status`, dan Cek status berisi riwayat. Pemeriksaan axe terhadap aturan WCAG A/AA tidak menemukan pelanggaran pada dashboard, dialog penolakan, form, dan riwayat yang diuji.
+- Review diff mencocokkan scope departemen dan 403, transaksi bulk, aturan status, audit, dan jendela tanggal dengan tes fitur. Commit `4f91596` menambahkan tautan Edit dari dialog penolakan dan memperbaiki kontras.
+- Snapshot Codex pada 11:42:45 WIB mencatat 184.920 token keluaran dan 73.952.000 token masukan dari cache sepanjang chat. Besaran penghematan token tidak terukur.
+
+Commit kode `4f91596` sudah di-push ke `main`. Job `ci` (SQLite) dan `mysql` lulus di [GitHub Actions](https://github.com/DanarArrsyd/si-lembur/actions/runs/46108947447).

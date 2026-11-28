@@ -44,12 +44,12 @@ Fase N — selesai
 - [x] Uji manual di viewport 360px & 412px; Lighthouse mobile
 
 ## Fase 4 — Area supervisor
-- [ ] Login + throttle + akun nonaktif ditolak
-- [ ] Dashboard KPI
-- [ ] Persetujuan: setujui, tolak (alasan), setujui terpilih; tampilan kartu di mobile
-- [ ] Riwayat + filter; edit (MENUNGGU), batalkan persetujuan (alasan)
-- [ ] Input atas nama karyawan (tanggal mundur sesuai aturan, langsung DISETUJUI)
-- [ ] Test otorisasi lintas departemen (403) untuk semua aksi, termasuk bulk
+- [x] Login + throttle + akun nonaktif ditolak
+- [x] Dashboard KPI
+- [x] Persetujuan: setujui, tolak (alasan), setujui terpilih; tampilan kartu di mobile
+- [x] Riwayat + filter; edit (MENUNGGU), batalkan persetujuan (alasan)
+- [x] Input atas nama karyawan (tanggal mundur sesuai aturan, langsung DISETUJUI)
+- [x] Test otorisasi lintas departemen (403) untuk semua aksi, termasuk bulk
 
 ## Fase 5 — Area admin
 - [ ] CRUD departemen + nonaktifkan
